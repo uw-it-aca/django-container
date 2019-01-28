@@ -13,15 +13,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_user_agents',
 ]
 
-MIDDLEWARE = [
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
+    'django.contrib.auth.middleware.PersistentRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -107,12 +106,12 @@ LOGGING = {
         'stdout': {
             'level':'INFO',
             'class':'logging.StreamHandler',
-            'strm': sys.stdout
+            'stream': sys.stdout
         },
         'stderr': {
             'level':'ERROR',
             'class':'logging.StreamHandler',
-            'strm': sys.stderr
+            'stream': sys.stderr
         },
     },
     'loggers': {
@@ -150,13 +149,13 @@ elif os.getenv("AUTH", "SAML_MOCK") == "SAML":
         'strict': True,
         'debug': True,
         'sp': {
-            'entityId': CLUSTER_CNAME + '/saml',
+            'entityId': 'https://' + CLUSTER_CNAME + '/saml',
             'assertionConsumerService': {
-                'url': CLUSTER_CNAME + '/saml/sso',
+                'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
             },
             'singleLogoutService': {
-                'url': CLUSTER_CNAME + '/saml/logout',
+                'url':  'https://' + CLUSTER_CNAME + '/saml/logout',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
             },
             'NameIDFormat': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
