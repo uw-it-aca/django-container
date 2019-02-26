@@ -30,4 +30,4 @@ RUN apt-get  update -y&& \
 RUN python3 -m venv /app/
 RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi && pip install boto3 watchtower && pip install mysqlclient
 RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
-ADD /django-scaffold/project /app/project
+ADD project/ /app/project
