@@ -4,7 +4,7 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
-SECRET_KEY = os.getenv("DJANGO_SECRET", "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx")
+SECRET_KEY = os.getenv('DJANGO_SECRET', 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -15,7 +15,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -23,7 +23,9 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.PersistentRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'userservice.user.UserServiceMiddleware',
 ]
+
 
 
 AUTHENTICATION_BACKENDS = [
@@ -40,28 +42,28 @@ USE_TZ = True
 ROOT_URLCONF = 'project.urls'
 WSGI_APPLICATION = 'project.wsgi.application'
 
-if os.getenv('DB', "sqlite3") == "sqlite3":
+if os.getenv('DB', 'sqlite3') == 'sqlite3':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
             'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         }
     }
-elif os.getenv('DB', "sqlite3") == "mysql":
+elif os.getenv('DB', 'sqlite3') == 'mysql':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
-            'HOST': os.getenv("DATABASE_HOSTNAME", "localhost"),
-            'NAME': os.getenv("DATABASE_DB_NAME", "db"),
-            'USER': os.getenv("DATABASE_USERNAME", "mysql_user"),
-            'PASSWORD': os.getenv("DATABASE_PASSWORD", "hunter2"),
+            'HOST': os.getenv('DATABASE_HOSTNAME', 'localhost'),
+            'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
+            'USER': os.getenv('DATABASE_USERNAME', 'mysql_user'),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', 'hunter2'),
         }
     }
 
 
-if os.getenv("CACHE", "none") == "memcached":
+if os.getenv('CACHE', 'none') == 'memcached':
     RESTCLIENTS_DAO_CACHE_CLASS='myuw.util.cache_implementation.MyUWMemcachedCache'
-    RESTCLIENTS_MEMCACHED_SERVERS = (os.getenv('CACHE_NODE_0', "") + ":" + os.getenv('CACHE_PORT', "11211"), os.getenv('CACHE_NODE_1', "") + ":" + os.getenv('CACHE_PORT', "11211"),)
+    RESTCLIENTS_MEMCACHED_SERVERS = (os.getenv('CACHE_NODE_0', '') + ':' + os.getenv('CACHE_PORT', '11211'), os.getenv('CACHE_NODE_1', '') + ':' + os.getenv('CACHE_PORT', '11211'),)
 
 
 
@@ -72,8 +74,8 @@ STATICFILES_FINDERS = (
 )
 
 COMPRESS_ENABLED = False
-COMPRESS_ROOT = "/static/"
-STATIC_ROOT = "/static/"
+COMPRESS_ROOT = '/static/'
+STATIC_ROOT = '/static/'
 STATIC_URL = '/static/'
 
 TEMPLATES = [
@@ -128,8 +130,8 @@ LOGGING = {
     }
 }
 
-if os.getenv("AUTH", "SAML_MOCK") == "SAML_MOCK":
-    INSTALLED_APPS += ["uw_saml"]
+if os.getenv('AUTH', 'SAML_MOCK') == 'SAML_MOCK':
+    INSTALLED_APPS += ['uw_saml']
 
     MOCK_SAML_ATTRIBUTES = {
     'uwnetid': ['javerage'],
@@ -140,16 +142,16 @@ if os.getenv("AUTH", "SAML_MOCK") == "SAML_MOCK":
                    'u_astratest_myuw_test-support-admin'],
     }
 
-elif os.getenv("AUTH", "SAML_MOCK") == "SAML":
-    INSTALLED_APPS += ["uw_saml"]
+elif os.getenv('AUTH', 'SAML_MOCK') == 'SAML':
+    INSTALLED_APPS += ['uw_saml']
 
-    CLUSTER_CNAME = os.getenv("CLUSTER_CNAME", "localhost")
+    CLUSTER_CNAME = os.getenv('CLUSTER_CNAME', 'localhost')
 
     UW_SAML = {
         'strict': True,
         'debug': True,
         'sp': {
-            'entityId': 'https://' + CLUSTER_CNAME + '/saml',
+            'entityId': 'https://' + CLUSTER_CNAME + '/shibboleth',
             'assertionConsumerService': {
                 'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
@@ -159,7 +161,7 @@ elif os.getenv("AUTH", "SAML_MOCK") == "SAML":
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
             },
             'NameIDFormat': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
-            'x509cert': os.getenv("SP_CERT", ""),
+            'x509cert': os.getenv('SP_CERT', ''),
                 },
         'idp': {
             'entityId': 'urn:mace:incommon:washington.edu',
@@ -171,7 +173,7 @@ elif os.getenv("AUTH", "SAML_MOCK") == "SAML":
                 'url': 'https://idp.u.washington.edu/idp/logout',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
             },
-            'x509cert': os.getenv("IDP_CERT", ""),
+            'x509cert': os.getenv('IDP_CERT', ''),
         },
         'security': {
             'authnRequestsSigned': False,
@@ -185,4 +187,62 @@ elif os.getenv("AUTH", "SAML_MOCK") == "SAML":
     LOGIN_URL = reverse_lazy('saml_login')
     LOGOUT_URL = reverse_lazy('saml_logout')
 
-    REMOTE_USER_FORMAT = "uwnetid"
+    REMOTE_USER_FORMAT = 'uwnetid'
+
+
+APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
+APPLICATION_KEY_PATH = os.getenv('KEY_PATH', '')
+
+# Restclient config
+
+RESTCLIENTS_CA_BUNDLE = '/app/certs/ca-bundle.crt' 
+
+if os.getenv('GWS_ENV') == 'PROD' or os.getenv('GWS_ENV') == 'EVAL':
+    RESTCLIENTS_GWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_GWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_GWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_GWS_TIMEOUT=5
+    RESTCLIENTS_GWS_POOL_SIZE=10
+
+if os.getenv('GWS_ENV') == 'PROD':
+    RESTCLIENTS_GWS_HOST='https://iam-ws.u.washington.edu:7443'
+
+
+if os.getenv('SWS_ENV') == 'PROD' or os.getenv('SWS_ENV') == 'EVAL':
+    RESTCLIENTS_SWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_SWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_SWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_SWS_TIMEOUT=5
+    RESTCLIENTS_SWS_POOL_SIZE=10
+
+if os.getenv('SWS_ENV') == 'PROD':
+    RESTCLIENTS_SWS_HOST='https://ws.admin.washington.edu:443'
+
+if os.getenv('SWS_ENV') == 'EVAL':
+    RESTCLIENTS_SWS_HOST = 'https://wseval.s.uw.edu:443'
+
+if os.getenv('PWS_ENV') == 'PROD' or os.getenv('PWS_ENV') == 'EVAL':
+    RESTCLIENTS_PWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_PWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_PWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_PWS_TIMEOUT=5
+    RESTCLIENTS_PWS_POOL_SIZE=10
+
+if os.getenv('PWS_ENV') == 'PROD':
+    RESTCLIENTS_PWS_HOST = 'https://ws.admin.washington.edu:443'
+
+if os.getenv('PWS_ENV') == 'EVAL':
+    RESTCLIENTS_PWS_HOST = 'https://wseval.s.uw.edu:443'
+
+if os.getenv('CANVAS_ENV') == 'PROD' or os.getenv('CANVAS_ENV') == 'EVAL':
+    RESTCLIENTS_CANVAS_DAO_CLASS='Live'
+    RESTCLIENTS_CANVAS_OAUTH_BEARER= os.getenv('CANVAS_OAUTH_BEARER', '')
+    RESTCLIENTS_CANVAS_TIMEOUT=5
+    RESTCLIENTS_CANVAS_POOL_SIZE=10
+
+if os.getenv('CAVNAS_ENV') == 'PROD':
+    RESTCLIENTS_CANVAS_HOST = 'https://canvas.uw.edu'
+
+if os.getenv('CANVAS_ENV') == 'EVAL':
+    RESTCLIENTS_CANVAS_HOST = 'https://uw.test.instructure.com'
+
