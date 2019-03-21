@@ -151,7 +151,7 @@ elif os.getenv('AUTH', 'SAML_MOCK') == 'SAML':
         'strict': True,
         'debug': True,
         'sp': {
-            'entityId': 'https://' + CLUSTER_CNAME + '/shibboleth',
+            'entityId': os.getenv("SAML_ENTITY_ID", "https://" + CLUSTER_CNAME + "/saml"),
             'assertionConsumerService': {
                 'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
