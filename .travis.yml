@@ -1,7 +1,15 @@
 dist: trusty
-
 jobs:
   include:
-    - stage: build docker image
-      script:
-        - echo "Test"
+  - stage: build docker image
+    script:
+    - echo "$DOCKER_PASSWORD"
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker build -t django-container .
+    - docker images
+    - docker tag django-container $DOCKER_USERNAME/django-container
+    - docker push $DOCKER_USERNAME/django-container
+env:
+  matrix:
+  - secure: bmdTOULTfvuRvObgBHX27sgLf+B1qfe7dSB+c/TSWXQcwxn85vT1hIUoeHP1CHkZBUVaz8k7HaquMLHnXmyk5gcoLFaKO+doIs38MamdI8m24rrEJCnkEASUT9mSrqyDpxhrBhPzMllTQmfIVPuWKi+ChIdtEhoVyES4InODg8JgX/37jImq8av7ljXdctzbfVTATQDiVctad0yQogE4t4VjRtSUGYhsPSlfm1Cv3uBdACc6+fl046urt6OWfJZrqO5qjdG2kQFDLXbnqsE15tKCaUkobq8zL+WRpPICObsVF1wQNt3p2nlDO5WPL8CLw1/B1DJJuepgfWb4a2HdmTNE3GCXW+2YZFy+WZAjJhp8+XlzGtuJk3jWf1b+wLlIyrG9pbD3eujFMFdMxZI2e5McCDyfqujm9dxy466F44iMBBMaGAhOsNb9Veqt7pSKevhFgZ5fhcdCQlpiJOitfaq0YrzNmuMZrEFX0lO2i0ZIukbndYL7IJ7eUAYmKFd0ty2mW24RmCmnuOMoqZP65AWiHwcu6Jv56orIdGds53J3ZFMQ/rLDQ/j1rN0Qs3Xu61OkartEyJf4MfZs1+53HBgZx4mW6zyTqlFURahu6GNMT6wxNmNr00lBKYkJKuqPlh5ccmuumEU0xhp6eB6PT37OmNvll8ARWFWrxqvtvBg=
+  - secure: RULiNwPXJMIZ1jNnSUnoo/cSD80MiCAAS7D/XtX4q0oCmW54k3ddQ87mcb3GSE+naXOKVwpm/ds6duxxodsaruFYaRztryLd8IcqWTx4vuIq503DlAbA8AZsNNJglGXl8GVpJw7WbeaBHhMnc9Hqi+EIDyMOIPeuRQ1uHhRu/NLjYIBF2gRZVK7mUlukCQLx3e+ECvpzqx7HzELX4/3FH2dGS1W1SGRyRmvcbnSEr329bzZ06EAZddabBJiu83aa2p1u5prV7QCGGiWapVIik4CamLINCe1gjTltOLgyXTBj0iPXhG1CViUa76moMS7Gl7gpF3Q6GjAZfI3lyq64CSsT9idRiN1NmLqPXw7AscMcrdMZS2HucbbG1mG+TN/uvgZNZYp1z0SLgGfy1c7kLaCW245GQPb4Ly68naIcyeZPi2GyOH7LKJdkq1b0mhHFhh15xeQTPlcqTgq395lZtVHWWAkkZLXeEqQRXlplCljygwn5KlPmeYV6oRJayxk0oMRkiL7kbZKUrpRWZIhxNhSSZzI/fQa5aSsA+nRucne7GtZ33LfGJdUasbMeKeGFG1WYTKIkKmSsLA+3NbkUrsOvpD5pMynzWkB9LY3oi86dEyY+0R/2CxdQVZCBb3fWd9ovEMLQDLlqXpszY8Olv++/40tIbP+GHtm5X3rVb5k=
