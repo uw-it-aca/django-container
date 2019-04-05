@@ -107,12 +107,12 @@ LOGGING = {
         'stdout': {
             'level':'INFO',
             'class':'logging.StreamHandler',
-            'strm': sys.stdout
+            'stream': sys.stdout
         },
         'stderr': {
             'level':'ERROR',
             'class':'logging.StreamHandler',
-            'strm': sys.stderr
+            'stream': sys.stderr
         },
     },
     'loggers': {
