@@ -1,5 +1,5 @@
-import os
 import sys
+import os
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -13,7 +13,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_user_agents',
 ]
 
 MIDDLEWARE = [
@@ -21,10 +20,12 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.RemoteUserMiddleware',
+    'django.contrib.auth.middleware.PersistentRemoteUserMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'userservice.user.UserServiceMiddleware',
 ]
+
 
 
 AUTHENTICATION_BACKENDS = [
@@ -107,12 +108,12 @@ LOGGING = {
         'stdout': {
             'level':'INFO',
             'class':'logging.StreamHandler',
-            'strm': sys.stdout
+            'stream': sys.stdout
         },
         'stderr': {
             'level':'ERROR',
             'class':'logging.StreamHandler',
-            'strm': sys.stderr
+            'stream': sys.stderr
         },
     },
     'loggers': {
@@ -150,13 +151,13 @@ elif os.getenv('AUTH', 'SAML_MOCK') == 'SAML':
         'strict': True,
         'debug': True,
         'sp': {
-            'entityId': CLUSTER_CNAME + '/saml',
+            'entityId': os.getenv("SAML_ENTITY_ID", "https://" + CLUSTER_CNAME + "/saml"),
             'assertionConsumerService': {
-                'url': CLUSTER_CNAME + '/saml/sso',
+                'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
             },
             'singleLogoutService': {
-                'url': CLUSTER_CNAME + '/saml/logout',
+                'url':  'https://' + CLUSTER_CNAME + '/saml/logout',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
             },
             'NameIDFormat': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
@@ -187,3 +188,59 @@ elif os.getenv('AUTH', 'SAML_MOCK') == 'SAML':
     LOGOUT_URL = reverse_lazy('saml_logout')
 
     REMOTE_USER_FORMAT = 'uwnetid'
+
+APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
+APPLICATION_KEY_PATH = os.getenv('KEY_PATH', '')
+
+# Restclient config
+
+RESTCLIENTS_CA_BUNDLE = '/app/certs/ca-bundle.crt' 
+
+if os.getenv('GWS_ENV') == 'PROD' or os.getenv('GWS_ENV') == 'EVAL':
+    RESTCLIENTS_GWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_GWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_GWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_GWS_TIMEOUT=5
+    RESTCLIENTS_GWS_POOL_SIZE=10
+
+if os.getenv('GWS_ENV') == 'PROD':
+    RESTCLIENTS_GWS_HOST='https://iam-ws.u.washington.edu:7443'
+
+
+if os.getenv('SWS_ENV') == 'PROD' or os.getenv('SWS_ENV') == 'EVAL':
+    RESTCLIENTS_SWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_SWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_SWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_SWS_TIMEOUT=5
+    RESTCLIENTS_SWS_POOL_SIZE=10
+
+if os.getenv('SWS_ENV') == 'PROD':
+    RESTCLIENTS_SWS_HOST='https://ws.admin.washington.edu:443'
+
+if os.getenv('SWS_ENV') == 'EVAL':
+    RESTCLIENTS_SWS_HOST = 'https://wseval.s.uw.edu:443'
+
+if os.getenv('PWS_ENV') == 'PROD' or os.getenv('PWS_ENV') == 'EVAL':
+    RESTCLIENTS_PWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_PWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_PWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_PWS_TIMEOUT=5
+    RESTCLIENTS_PWS_POOL_SIZE=10
+
+if os.getenv('PWS_ENV') == 'PROD':
+    RESTCLIENTS_PWS_HOST = 'https://ws.admin.washington.edu:443'
+
+if os.getenv('PWS_ENV') == 'EVAL':
+    RESTCLIENTS_PWS_HOST = 'https://wseval.s.uw.edu:443'
+
+if os.getenv('CANVAS_ENV') == 'PROD' or os.getenv('CANVAS_ENV') == 'EVAL':
+    RESTCLIENTS_CANVAS_DAO_CLASS='Live'
+    RESTCLIENTS_CANVAS_OAUTH_BEARER= os.getenv('CANVAS_OAUTH_BEARER', '')
+    RESTCLIENTS_CANVAS_TIMEOUT=5
+    RESTCLIENTS_CANVAS_POOL_SIZE=10
+
+if os.getenv('CAVNAS_ENV') == 'PROD':
+    RESTCLIENTS_CANVAS_HOST = 'https://canvas.uw.edu'
+
+if os.getenv('CANVAS_ENV') == 'EVAL':
+    RESTCLIENTS_CANVAS_HOST = 'https://uw.test.instructure.com'
