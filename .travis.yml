@@ -1,9 +1,8 @@
 sudo: false
 script:
-- echo "$TRAVIS_BRANCH"
-- echo "$DOCKER_PASSWORD"
 - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
 - docker build -t django-container .
 - docker images
-- docker tag django-container $DOCKER_USERNAME/django-container
+- docker tag django-container "$DOCKER_USERNAME/django-container:$TRAVIS_BRANCH"
+- docker images
   # - docker push $DOCKER_USERNAME/django-container
