@@ -128,7 +128,7 @@ LOGGING = {
     }
 }
 
-if os.getenv('AUTH', 'SAML_MOCK') == 'SAML_MOCK':
+if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
     INSTALLED_APPS += ['uw_saml']
 
     MOCK_SAML_ATTRIBUTES = {
@@ -140,7 +140,7 @@ if os.getenv('AUTH', 'SAML_MOCK') == 'SAML_MOCK':
                    'u_astratest_myuw_test-support-admin'],
     }
 
-elif os.getenv('AUTH', 'SAML_MOCK') == 'SAML':
+elif os.getenv('AUTH', 'NONE') == 'SAML':
     INSTALLED_APPS += ['uw_saml']
 
     CLUSTER_CNAME = os.getenv('CLUSTER_CNAME', 'localhost')
