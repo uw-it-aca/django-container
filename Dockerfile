@@ -12,6 +12,7 @@ RUN apt-get  update -y&& \
     apt-get install -y \
     git \
     hostname \
+    locales \
     openssl \
     sqlite3 \
     sudo \
@@ -26,6 +27,13 @@ RUN apt-get  update -y&& \
     libxmlsec1-dev \
     python-pip \
     libmysqlclient-dev
+
+RUN locale-gen en_US.UTF-8
+# locale.getdefaultlocale() searches in this order
+ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
+ENV LC_CTYPE en_US.UTF-8
+ENV LANG en_US.UTF-8
 
 RUN python3 -m venv /app/
 RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi && pip install boto3 watchtower && pip install mysqlclient
