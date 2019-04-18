@@ -1,5 +1,6 @@
 import os
 import sys
+import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -40,24 +41,12 @@ USE_TZ = True
 ROOT_URLCONF = 'project.urls'
 WSGI_APPLICATION = 'project.wsgi.application'
 
-if os.getenv('DB', 'sqlite3') == 'sqlite3':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
-elif os.getenv('DB', 'sqlite3') == 'mysql':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'HOST': os.getenv('DATABASE_HOSTNAME', 'localhost'),
-            'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
-            'USER': os.getenv('DATABASE_USERNAME', 'mysql_user'),
-            'PASSWORD': os.getenv('DATABASE_PASSWORD', 'hunter2'),
-        }
-    }
-
+# load DATABASES['default'] from os.getenv('DATABASE_URL')
+# schema: https://github.com/kennethreitz/dj-database-url#url-schema
+DATABASES = {
+    'default': dj_database_url.config(default='sqlite:///{}'.format(
+        os.path.join(BASE_DIR, 'db.sqlite3')))
+}
 
 if os.getenv('CACHE', 'none') == 'memcached':
     RESTCLIENTS_DAO_CACHE_CLASS='myuw.util.cache_implementation.MyUWMemcachedCache'
