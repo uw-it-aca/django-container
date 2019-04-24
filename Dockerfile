@@ -39,8 +39,11 @@ RUN python3 -m venv /app/
 RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi && pip install boto3 watchtower && pip install mysqlclient
 RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
 ADD project/ /app/project
+ADD scripts scripts/
+RUN mkdir /static
 
-ADD /docker/web/apache2.conf /tmp/apache2.conf
+
+ADD docker/web/apache2.conf /tmp/apache2.conf
 RUN rm -rf /etc/apache2/sites-available/ && \
     mkdir /etc/apache2/sites-available/ && \
     rm -rf /etc/apache2/sites-enabled/ && \
