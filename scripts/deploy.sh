@@ -2,6 +2,12 @@ source "/app/bin/activate"
 
 python3 manage.py migrate
 
+if [ -f /scripts/app_deploy.sh ]
+then
+
+  . /scripts/app_deploy.sh
+
+fi
 
 if [ "$STATICS"  = "S3"]
 then
@@ -15,15 +21,5 @@ then
   then
 
   fi
-
-fi
-
-
-
-
-if [ -f /scripts/app_deploy.sh ]
-then
-
-  . /scripts/app_deploy.sh
 
 fi

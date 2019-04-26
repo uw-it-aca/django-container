@@ -13,13 +13,6 @@ then
 fi
 
 
-if [ "$ENV"  = "localdev" ]
-then
-
-  python manage.py runserver 0:$PORT
-
-else
-
 if [ -f /scripts/app_start.sh ]
 then
 
@@ -27,7 +20,17 @@ then
 
 fi
 
-# Start Apache server in foreground
-exec /usr/sbin/apachectl -DFOREGROUND
+if [ "$ENV"  = "localdev" ]
+then
+
+  python manage.py runserver 0:$PORT
+
+else
+
+
+if [ "$ENV" = "eval" || "$ENV" = "prod" || "$ENV" = "dev" ]
+
+  # Start Apache server in foreground
+  exec /usr/sbin/apachectl -DFOREGROUND
 
 fi
