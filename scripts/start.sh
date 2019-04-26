@@ -24,7 +24,7 @@ if [ "$ENV"  = "localdev" ]
 then
 
   python manage.py migrate
-  python manage.py runserver 0:$PORT
+  python manage.py runserver 0:$PORT --insecure
 
 else
 

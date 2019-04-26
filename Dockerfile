@@ -58,11 +58,11 @@ RUN groupadd -r acait -g 1000 && \
     chown -R acait:acait /var &&\
     chown -R acait:acait /run &&\
     chown -R acait:acait /scripts &&\
+    mkdir /var/lock/apache2 &&\
     chown -R acait:acait /var/lock/ &&\
     chown -R acait:acait /home/acait
+
 USER acait
-
-
 
 RUN chmod -R u+x /scripts
     
