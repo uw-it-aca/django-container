@@ -43,7 +43,7 @@ ADD scripts scripts/
 RUN mkdir /static
 
 
-ADD docker/web/apache2.conf /tmp/apache2.conf
+ADD conf/apache2.conf /tmp/apache2.conf
 RUN rm -rf /etc/apache2/sites-available/ && \
     mkdir /etc/apache2/sites-available/ && \
     rm -rf /etc/apache2/sites-enabled/ && \
