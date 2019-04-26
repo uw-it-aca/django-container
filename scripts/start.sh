@@ -23,12 +23,10 @@ fi
 if [ "$ENV"  = "localdev" ]
 then
 
+  python manage.py migrate
   python manage.py runserver 0:$PORT
 
 else
-
-
-if [ "$ENV" = "eval" || "$ENV" = "prod" || "$ENV" = "dev" ]
 
   # Start Apache server in foreground
   exec /usr/sbin/apachectl -DFOREGROUND

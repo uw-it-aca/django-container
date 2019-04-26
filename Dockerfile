@@ -38,7 +38,7 @@ RUN python3 -m venv /app/
 RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi
 RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
 ADD project/ /app/project
-ADD scripts scripts/
+ADD scripts /scripts
 RUN mkdir /static
 
 
@@ -57,9 +57,15 @@ RUN groupadd -r acait -g 1000 && \
     chown -R acait:acait /static &&\
     chown -R acait:acait /var &&\
     chown -R acait:acait /run &&\
-    mkdir /var/lock/apache2 &&\
+    chown -R acait:acait /scripts &&\
     chown -R acait:acait /var/lock/ &&\
     chown -R acait:acait /home/acait
+USER acait
+
+
+
+RUN chmod -R u+x /scripts
+    
 
 ENV PORT 8000
 ENV DB sqlite3
