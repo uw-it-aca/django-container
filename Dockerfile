@@ -25,8 +25,7 @@ RUN apt-get  update -y&& \
     python3-venv \
     libxml2-dev \
     libxmlsec1-dev \
-    python-pip \
-    libmysqlclient-dev
+    python-pip 
 
 RUN locale-gen en_US.UTF-8
 # locale.getdefaultlocale() searches in this order
@@ -62,3 +61,6 @@ RUN groupadd -r acait -g 1000 && \
     chown -R acait:acait /var/lock/ &&\
     chown -R acait:acait /home/acait
 
+ENV PORT 8000
+ENV DB sqlite3
+ENV ENV localdev
