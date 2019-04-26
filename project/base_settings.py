@@ -186,3 +186,59 @@ elif os.getenv('AUTH', 'NONE') == 'SAML':
     LOGOUT_URL = reverse_lazy('saml_logout')
 
     REMOTE_USER_FORMAT = 'uwnetid'
+
+APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
+APPLICATION_KEY_PATH = os.getenv('KEY_PATH', '')
+
+# Restclient config
+
+RESTCLIENTS_CA_BUNDLE = '/app/certs/ca-bundle.crt' 
+
+if os.getenv('GWS_ENV') == 'PROD' or os.getenv('GWS_ENV') == 'EVAL':
+    RESTCLIENTS_GWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_GWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_GWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_GWS_TIMEOUT=5
+    RESTCLIENTS_GWS_POOL_SIZE=10
+
+if os.getenv('GWS_ENV') == 'PROD':
+    RESTCLIENTS_GWS_HOST='https://iam-ws.u.washington.edu:7443'
+
+
+if os.getenv('SWS_ENV') == 'PROD' or os.getenv('SWS_ENV') == 'EVAL':
+    RESTCLIENTS_SWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_SWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_SWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_SWS_TIMEOUT=5
+    RESTCLIENTS_SWS_POOL_SIZE=10
+
+if os.getenv('SWS_ENV') == 'PROD':
+    RESTCLIENTS_SWS_HOST='https://ws.admin.washington.edu:443'
+
+if os.getenv('SWS_ENV') == 'EVAL':
+    RESTCLIENTS_SWS_HOST = 'https://wseval.s.uw.edu:443'
+
+if os.getenv('PWS_ENV') == 'PROD' or os.getenv('PWS_ENV') == 'EVAL':
+    RESTCLIENTS_PWS_DAO_CLASS = 'Live'
+    RESTCLIENTS_PWS_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_PWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_PWS_TIMEOUT=5
+    RESTCLIENTS_PWS_POOL_SIZE=10
+
+if os.getenv('PWS_ENV') == 'PROD':
+    RESTCLIENTS_PWS_HOST = 'https://ws.admin.washington.edu:443'
+
+if os.getenv('PWS_ENV') == 'EVAL':
+    RESTCLIENTS_PWS_HOST = 'https://wseval.s.uw.edu:443'
+
+if os.getenv('CANVAS_ENV') == 'PROD' or os.getenv('CANVAS_ENV') == 'EVAL':
+    RESTCLIENTS_CANVAS_DAO_CLASS='Live'
+    RESTCLIENTS_CANVAS_OAUTH_BEARER= os.getenv('CANVAS_OAUTH_BEARER', '')
+    RESTCLIENTS_CANVAS_TIMEOUT=5
+    RESTCLIENTS_CANVAS_POOL_SIZE=10
+
+if os.getenv('CAVNAS_ENV') == 'PROD':
+    RESTCLIENTS_CANVAS_HOST = 'https://canvas.uw.edu'
+
+if os.getenv('CANVAS_ENV') == 'EVAL':
+    RESTCLIENTS_CANVAS_HOST = 'https://uw.test.instructure.com'
