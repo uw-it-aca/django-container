@@ -70,3 +70,5 @@ RUN chmod -R u+x /scripts
 ENV PORT 8000
 ENV DB sqlite3
 ENV ENV localdev
+
+CMD [ "/scripts/start.sh" ]
