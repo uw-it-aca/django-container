@@ -162,11 +162,11 @@ elif os.getenv('AUTH', 'NONE') == 'SAML':
         'sp': {
             'entityId': os.getenv("SAML_ENTITY_ID", "https://" + CLUSTER_CNAME + "/saml"),
             'assertionConsumerService': {
-                'url': CLUSTER_CNAME + '/saml/sso',
+                'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
             },
             'singleLogoutService': {
-                'url': CLUSTER_CNAME + '/saml/logout',
+                'url': 'https://' + CLUSTER_CNAME + '/saml/logout',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
             },
             'NameIDFormat': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
