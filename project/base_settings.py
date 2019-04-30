@@ -62,7 +62,7 @@ elif os.getenv('DB', 'sqlite3') == 'mysql':
             'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
         }
     }
-elif os.getnev('DB', 'sqlite3') == 'postgres':
+elif os.getenv('DB', 'sqlite3') == 'postgres':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgres',
