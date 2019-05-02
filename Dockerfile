@@ -25,10 +25,7 @@ RUN apt-get  update -y&& \
     python3-venv \
     libxml2-dev \
     libxmlsec1-dev \
-    python-pip \
-    libpq-dev \
-    mysql-client \
-    libmysqlclient-dev 
+    python-pip 
 
 RUN locale-gen en_US.UTF-8
 # locale.getdefaultlocale() searches in this order
