@@ -65,7 +65,7 @@ elif os.getenv('DB', 'sqlite3') == 'mysql':
 elif os.getenv('DB', 'sqlite3') == 'postgres':
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgres',
+            'ENGINE': 'django.db.backends.postgresql',
             'HOST': os.getenv('DATABASE_HOSTNAME', 'localhost'),
             'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
             'USER': os.getenv('DATABASE_USERNAME', None),
