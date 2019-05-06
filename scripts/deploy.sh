@@ -1,3 +1,4 @@
+#!/bin/bash
 source "/app/bin/activate"
 
 python3 manage.py migrate
@@ -14,12 +15,12 @@ then
 
   if [ "$ENV" = "dev"]
   then
-
+    echo "dev"
   fi
 
-  if [ "ENV" = "prod"]
+  if [ "$ENV" = "prod"]
   then
-
+    echo "prod"
   fi
 
 fi
