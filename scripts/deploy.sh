@@ -10,15 +10,15 @@ then
 
 fi
 
-if [ "$STATICS"  = "S3"]
+if [ "$STATICS"  = "S3" ]
 then
 
-  if [ "$ENV" = "dev"]
+  if [ "$ENV" = "dev" ]
   then
     echo "dev"
   fi
 
-  if [ "$ENV" = "prod"]
+  if [ "$ENV" = "prod" ]
   then
     echo "prod"
   fi
