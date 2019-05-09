@@ -39,6 +39,7 @@ RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python g
 RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
 ADD project/ /app/project
 ADD scripts /scripts
+ADD certs/ /app/certs
 RUN mkdir /static
 
 
