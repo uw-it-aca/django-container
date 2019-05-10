@@ -44,29 +44,31 @@ RUN mkdir /static
 
 
 ADD conf/apache2.conf /tmp/apache2.conf
+ADD conf/envvars /tmp/envvars
 RUN rm -rf /etc/apache2/sites-available/ && \
     mkdir /etc/apache2/sites-available/ && \
     rm -rf /etc/apache2/sites-enabled/ && \
     mkdir /etc/apache2/sites-enabled/ && \
     rm /etc/apache2/apache2.conf && \
     cp /tmp/apache2.conf /etc/apache2/apache2.conf && \
+    rm /etc/apache2/envvars &&\
+    cp /tmp/envvars /etc/apache2/envvars &&\
     mkdir /etc/apache2/logs
 
+
+RUN mkdir /var/lock/apache2 && mkdir /var/run/apache2
 RUN groupadd -r acait -g 1000 && \
     useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait &&\
     chown -R acait:acait /app &&\
     chown -R acait:acait /static &&\
-    chown -R acait:acait /var &&\
-    chown -R acait:acait /run &&\
-    chown -R acait:acait /scripts &&\
-    mkdir /var/lock/apache2 &&\
-    chown -R acait:acait /var/lock/ &&\
-    chown -R acait:acait /home/acait
+    chown -R acait:acait /home/acait &&\
+    chown -R acait:acait /var/lock/apache2 &&\
+    chown -R acait:acait /var/run/apache2  
+
+RUN chmod -R +x /scripts
+
 
 USER acait
-
-RUN chmod -R u+x /scripts
-    
 
 ENV PORT 8000
 ENV DB sqlite3
