@@ -1,10 +1,15 @@
+from django.core.management.utils import get_random_secret_key
 import os
 import sys
+
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
-SECRET_KEY = os.getenv('DJANGO_SECRET', 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+if os.getenv('ENV', 'localdev'):
+    SECRET_KEY = os.getenv('DJANGO_SECRET', get_random_secret_key())
+else:
+    SECREY_KEY = os.getenv('DJANGO_SECRET', None)
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -53,11 +58,20 @@ elif os.getenv('DB', 'sqlite3') == 'mysql':
             'ENGINE': 'django.db.backends.mysql',
             'HOST': os.getenv('DATABASE_HOSTNAME', 'localhost'),
             'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
-            'USER': os.getenv('DATABASE_USERNAME', 'mysql_user'),
-            'PASSWORD': os.getenv('DATABASE_PASSWORD', 'hunter2'),
+            'USER': os.getenv('DATABASE_USERNAME', None),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
         }
     }
-
+elif os.getenv('DB', 'sqlite3') == 'postgres':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'HOST': os.getenv('DATABASE_HOSTNAME', 'localhost'),
+            'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
+            'USER': os.getenv('DATABASE_USERNAME', None),
+            'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
+        }
+    }
 
 if os.getenv('CACHE', 'none') == 'memcached':
     RESTCLIENTS_DAO_CACHE_CLASS='myuw.util.cache_implementation.MyUWMemcachedCache'
@@ -68,11 +82,8 @@ if os.getenv('CACHE', 'none') == 'memcached':
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    'compressor.finders.CompressorFinder',
 )
 
-COMPRESS_ENABLED = False
-COMPRESS_ROOT = '/static/'
 STATIC_ROOT = '/static/'
 STATIC_URL = '/static/'
 
@@ -149,13 +160,13 @@ elif os.getenv('AUTH', 'NONE') == 'SAML':
         'strict': True,
         'debug': True,
         'sp': {
-            'entityId': CLUSTER_CNAME + '/saml',
+            'entityId': os.getenv("SAML_ENTITY_ID", "https://" + CLUSTER_CNAME + "/saml"),
             'assertionConsumerService': {
-                'url': CLUSTER_CNAME + '/saml/sso',
+                'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
             },
             'singleLogoutService': {
-                'url': CLUSTER_CNAME + '/saml/logout',
+                'url': 'https://' + CLUSTER_CNAME + '/saml/logout',
                 'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
             },
             'NameIDFormat': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
@@ -184,7 +195,6 @@ elif os.getenv('AUTH', 'NONE') == 'SAML':
     from django.core.urlresolvers import reverse_lazy
     LOGIN_URL = reverse_lazy('saml_login')
     LOGOUT_URL = reverse_lazy('saml_logout')
-
     REMOTE_USER_FORMAT = 'uwnetid'
 
 APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
