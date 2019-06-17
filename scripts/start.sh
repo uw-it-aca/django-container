@@ -13,6 +13,13 @@ then
 fi
 
 
+if [ "$DB" = "postgres" ] && [ "$ENV" = "dev" ]
+then
+    export PGPASSWORD=$DATABASE_PASSWORD
+    createdb -U $DATABASE_USERNAME -h $DATABASE_HOSTNAME $DATABASE_DB_NAME
+fi
+
+
 if [ -f /scripts/app_start.sh ]
 then
 
