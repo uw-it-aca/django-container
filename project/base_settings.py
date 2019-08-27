@@ -151,6 +151,10 @@ if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
                    'u_astratest_myuw_test-support-admin'],
     }
 
+    from django.urls import reverse_lazy
+    LOGIN_URL = reverse_lazy('saml_login')
+    LOGOUT_URL = reverse_lazy('saml_logout')
+
 elif os.getenv('AUTH', 'NONE') == 'SAML':
     INSTALLED_APPS += ['uw_saml']
 
