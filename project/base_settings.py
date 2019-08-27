@@ -192,9 +192,9 @@ elif os.getenv('AUTH', 'NONE') == 'SAML':
                 }
     }
 
-    from django.core.urlresolvers import reverse_lazy
-    LOGIN_URL = reverse_lazy('saml_login')
-    LOGOUT_URL = reverse_lazy('saml_logout')
+    from django.urls import reverse
+    LOGIN_URL = reverse('saml_login')
+    LOGOUT_URL = reverse('saml_logout')
     REMOTE_USER_FORMAT = 'uwnetid'
 
 APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
