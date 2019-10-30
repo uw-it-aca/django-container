@@ -49,6 +49,8 @@ RUN rm -rf /etc/apache2/sites-available/ && \
     mkdir /etc/apache2/sites-available/ && \
     rm -rf /etc/apache2/sites-enabled/ && \
     mkdir /etc/apache2/sites-enabled/ && \
+    rm -rf /etc/apache2/conf-enabled/ && \
+    mkdir /etc/apache2/conf-enabled/ && \
     rm /etc/apache2/apache2.conf && \
     cp /tmp/apache2.conf /etc/apache2/apache2.conf && \
     rm /etc/apache2/envvars &&\
