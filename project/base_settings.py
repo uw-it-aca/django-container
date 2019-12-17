@@ -206,7 +206,7 @@ APPLICATION_KEY_PATH = os.getenv('KEY_PATH', '')
 
 # Restclient config
 
-RESTCLIENTS_CA_BUNDLE = '/app/certs/ca-bundle.crt' 
+RESTCLIENTS_CA_BUNDLE = '/app/certs/ca-bundle.crt'
 
 if os.getenv('GWS_ENV') == 'PROD' or os.getenv('GWS_ENV') == 'EVAL':
     RESTCLIENTS_GWS_DAO_CLASS = 'Live'
@@ -377,3 +377,15 @@ if os.getenv('HFS_ENV') == 'EVAL':
     RESTCLIENTS_HFS_HOST = 'https://tapi.washington.edu'
 
 
+if os.getenv('ADSEL_ENV') == 'PROD' or os.getenv('ADSEL_ENV') == 'EVAL':
+    RESTCLIENTS_ADSEL_DAO_CLASS = 'Live'
+    RESTCLIENTS_ADSEL_TIMEOUT = 5
+    RESTCLIENTS_ADSEL_POOL_SIZE = 10
+    RESTCLIENTS_ADSEL_CERT_FILE = APPLICATION_CERT_PATH
+    RESTCLIENTS_ADSEL_KEY_FILE = APPLICATION_KEY_PATH
+
+if os.getenv('ADSEL_ENV') == 'PROD':
+    RESTCLIENTS_ADSEL_HOST = 'https://adselapi.uw.edu'
+
+if os.getenv('ADSEL_ENV') == 'EVAL':
+    RESTCLIENTS_ADSEL_HOST = 'https://test.adselapi.uw.edu'
