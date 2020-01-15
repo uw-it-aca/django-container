@@ -357,17 +357,6 @@ if os.getenv('MYPLAN_ENV') == 'PROD' or os.getenv('MYPLAN_ENV') == 'EVAL':
     else:
         RESTCLIENTS_MYPLAN_HOST = 'https://ws-eval.uwstudent.washington.edu'
 
-if os.getenv('HFS_ENV') == 'PROD' or os.getenv('HFS_ENV') == 'EVAL':
-    RESTCLIENTS_HFS_DAO_CLASS = 'Live'
-    RESTCLIENTS_HFS_CERT_FILE = APPLICATION_CERT_PATH
-    RESTCLIENTS_HFS_KEY_FILE = APPLICATION_KEY_PATH
-    RESTCLIENTS_HFS_TIMEOUT = RESTCLIENTS_DEFAULT_TIMEOUT
-    RESTCLIENTS_HFS_POOL_SIZE = RESTCLIENTS_DEFAULT_POOL_SIZE
-    if os.getenv('HFS_ENV') == 'PROD':
-        RESTCLIENTS_HFS_HOST = 'https://api.hfs.washington.edu'
-    else:
-        RESTCLIENTS_HFS_HOST = 'https://tapi.washington.edu'
-
 if os.getenv('LIBCURRICS_ENV') == 'PROD' or os.getenv('LIBCURRICS_ENV') == 'EVAL':
     RESTCLIENTS_LIBCURRICS_DAO_CLASS = 'Live'
     RESTCLIENTS_LIBCURRICS_CERT_FILE = APPLICATION_CERT_PATH
