@@ -1,4 +1,5 @@
 from django.core.management.utils import get_random_secret_key
+from django.urls import reverse_lazy
 import os
 import sys
 
@@ -139,67 +140,65 @@ LOGGING = {
     }
 }
 
-if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
+if os.getenv('AUTH', 'NONE') == 'SAML_MOCK' or os.getenv('AUTH', 'NONE') == 'SAML':
     INSTALLED_APPS += ['uw_saml']
-
-    MOCK_SAML_ATTRIBUTES = {
-    'uwnetid': ['javerage'],
-    'affiliations': ['student', 'member', 'alum', 'staff', 'employee'],
-    'eppn': ['javerage@washington.edu'],
-    'scopedAffiliations': ['student@washington.edu', 'member@washington.edu'],
-    'isMemberOf': ['u_test_group', 'u_test_another_group',
-                   'u_astratest_myuw_test-support-admin'],
-    }
-
-    from django.urls import reverse_lazy
     LOGIN_URL = reverse_lazy('saml_login')
     LOGOUT_URL = reverse_lazy('saml_logout')
+    SAML_USER_ATTRIBUTE = os.getenv('SAML_USER_ATTRIBUTE', 'uwnetid')
+    SAML_FORCE_AUTHN = os.getenv('SAML_FORCE_AUTHN', False)
 
-elif os.getenv('AUTH', 'NONE') == 'SAML':
-    INSTALLED_APPS += ['uw_saml']
+    if os.getenv('AUTH', 'NONE') == 'SAML_MOCK':
+        MOCK_SAML_ATTRIBUTES = {
+            'uwnetid': ['javerage'],
+            'affiliations': ['student', 'member', 'alum', 'staff', 'employee'],
+            'eppn': ['javerage@washington.edu'],
+            'scopedAffiliations': ['student@washington.edu', 'member@washington.edu'],
+            'isMemberOf': ['u_test_group', 'u_test_another_group',
+                           'u_astratest_myuw_test-support-admin'],
+        }
 
-    CLUSTER_CNAME = os.getenv('CLUSTER_CNAME', 'localhost')
-
-    UW_SAML = {
-        'strict': True,
-        'debug': True,
-        'sp': {
-            'entityId': os.getenv("SAML_ENTITY_ID", "https://" + CLUSTER_CNAME + "/saml"),
-            'assertionConsumerService': {
-                'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
-                'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
-            },
-            'singleLogoutService': {
-                'url': 'https://' + CLUSTER_CNAME + '/saml/logout',
-                'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
-            },
-            'NameIDFormat': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
-            'x509cert': os.getenv('SP_CERT', ''),
+    elif os.getenv('AUTH', 'NONE') == 'SAML':
+        CLUSTER_CNAME = os.getenv('CLUSTER_CNAME', 'localhost')
+        UW_SAML = {
+            'strict': True,
+            'debug': True,
+            'sp': {
+                'entityId': os.getenv('SAML_ENTITY_ID', 'https://' + CLUSTER_CNAME + '/saml'),
+                'assertionConsumerService': {
+                    'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
+                    'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
                 },
-        'idp': {
-            'entityId': 'urn:mace:incommon:washington.edu',
-            'singleSignOnService': {
-                'url': 'https://idp.u.washington.edu/idp/profile/SAML2/Redirect/SSO',
-                'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+                'singleLogoutService': {
+                    'url': 'https://' + CLUSTER_CNAME + '/saml/logout',
+                    'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+                },
+                'NameIDFormat': 'urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified',
+                'x509cert': os.getenv('SP_CERT', ''),
+                if os.getenv('SP_PRIVATE_KEY', None):
+                    'privateKey': os.getenv('SP_PRIVATE_KEY'),
             },
-            'singleLogoutService': {
-                'url': 'https://idp.u.washington.edu/idp/logout',
-                'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+            'idp': {
+                'entityId': 'urn:mace:incommon:washington.edu',
+                'singleSignOnService': {
+                    'url': 'https://idp.u.washington.edu/idp/profile/SAML2/Redirect/SSO',
+                    'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+                },
+                'singleLogoutService': {
+                    'url': 'https://idp.u.washington.edu/idp/logout',
+                    'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect'
+                },
+                'x509cert': os.getenv('IDP_CERT', ''),
             },
-            'x509cert': os.getenv('IDP_CERT', ''),
-        },
-        'security': {
-            'authnRequestsSigned': False,
-            'wantMessagesSigned': True,
-            'wantAssertionsSigned': False,
-            'wantAssertionsEncrypted': False,
-                }
-    }
-
-    from django.urls import reverse_lazy
-    LOGIN_URL = reverse_lazy('saml_login')
-    LOGOUT_URL = reverse_lazy('saml_logout')
-    REMOTE_USER_FORMAT = 'uwnetid'
+            'security': {
+                'authnRequestsSigned': os.getenv('SP_AUTHN_REQUESTS_SIGNED', False),
+                'wantMessagesSigned': os.getenv('SP_WANT_MESSAGES_SIGNED', True),
+                'wantAssertionsSigned': os.getenv('SP_WANT_ASSERTIONS_SIGNED', False),
+                'wantAssertionsEncrypted': os.getenv('SP_WANT_ASSERTIONS_ENCRYPTED', False),
+                if os.getenv('SP_USE_2FA', False):
+                    'requestedAuthnContext': ['urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken'],
+                    'failOnAuthnContextMismatch': True,
+            }
+        }
 
 APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
 APPLICATION_KEY_PATH = os.getenv('KEY_PATH', '')
