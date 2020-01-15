@@ -288,7 +288,7 @@ if os.getenv('CANVAS_ENV') == 'PROD' or os.getenv('CANVAS_ENV') == 'EVAL':
     RESTCLIENTS_CANVAS_OAUTH_BEARER = os.getenv('CANVAS_OAUTH_BEARER', '')
     RESTCLIENTS_CANVAS_TIMEOUT = os.getenv('CANVAS_TIMEOUT', RESTCLIENTS_DEFAULT_TIMEOUT)
     RESTCLIENTS_CANVAS_POOL_SIZE = RESTCLIENTS_DEFAULT_POOL_SIZE
-    if os.getenv('CAVNAS_ENV') == 'PROD':
+    if os.getenv('CANVAS_ENV') == 'PROD':
         RESTCLIENTS_CANVAS_HOST = 'https://canvas.uw.edu'
     else:
         RESTCLIENTS_CANVAS_HOST = 'https://uw.test.instructure.com'
