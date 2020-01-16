@@ -1,3 +1,4 @@
+from django.core.exceptions import ImproperlyConfigured
 from django.core.management.utils import get_random_secret_key
 from django.urls import reverse_lazy
 import os
@@ -140,7 +141,7 @@ LOGGING = {
     }
 }
 
-if os.getenv('AUTH', 'NONE') == 'SAML_MOCK' or os.getenv('AUTH', 'NONE') == 'SAML':
+if os.getenv('AUTH', 'NONE') == 'SAML_MOCK' or os.getenv('AUTH', 'NONE') == 'DJANGO_LOGIN' or os.getenv('AUTH', 'NONE') == 'SAML':
     INSTALLED_APPS += ['uw_saml']
     LOGIN_URL = reverse_lazy('saml_login')
     LOGOUT_URL = reverse_lazy('saml_logout')
@@ -156,6 +157,63 @@ if os.getenv('AUTH', 'NONE') == 'SAML_MOCK' or os.getenv('AUTH', 'NONE') == 'SAM
             'isMemberOf': ['u_test_group', 'u_test_another_group',
                            'u_astratest_myuw_test-support-admin'],
         }
+
+    elif os.getenv('AUTH', 'NONE') == 'DJANGO_LOGIN':
+        AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+
+        UW_SAML_MOCK = {
+            'NAME_ID': 'mock-nameid',
+            'SESSION_INDEX': 'mock-session',
+            'SAML_USERS': [
+                {
+                    "username": None,
+                    "password": None,
+                    "email": None,
+                    "MOCK_ATTRIBUTES" : {
+                        'uwnetid': [None],
+                        'affiliations': ['student', 'member'],
+                        'eppn': ['javerage@washington.edu'],
+                        'scopedAffiliations': ['student@washington.edu', 'member@washington.edu'],
+                        'isMemberOf': [
+                            'u_test_group', 'u_test_another_group'
+                        ],
+                    }
+                }
+            ]
+        }
+
+        if os.getenv('username'):
+            UW_SAML_MOCK['SAML_USERS'][0]['username'] = os.getenv('username')
+        else:
+            raise ImproperlyConfigured('A username must be passed in the env to DJANGO_LOGIN as authentication backend')
+
+        if os.getenv('password'):
+            UW_SAML_MOCK['SAML_USERS'][0]['password'] = os.getenv('password')
+        else:
+            raise ImproperlyConfigured('A password must be passed in the env to DJANGO_LOGIN as authentication backend')
+
+        if os.getenv('email'):
+            UW_SAML_MOCK['SAML_USERS'][0]['email'] = os.getenv('email')
+        else:
+            UW_SAML_MOCK['SAML_USERS'][0]['email'] = os.getenv('username') + '@uw.edu'
+
+        if os.getenv('uwnetid'):
+            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['uwnetid'] = os.getenv('uwnetid')
+        else:
+            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['uwnetid'] = os.getenv('username')
+
+        if os.getenv('affiliations'):
+            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['affiliations'] = list(map(str.strip, os.getenv('affiliations').split(',')))
+
+        if os.getenv('eppn'):
+            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['eppn'] = list(map(str.strip, os.getenv('eppn').split(',')))
+
+        if os.getenv('scopedAffiliations'):
+            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['scopedAffiliations'] = list(map(str.strip, os.getenv('scopedAffiliations').split(',')))
+
+        if os.getenv('isMemberOf'):
+            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['isMemberOf'] = list(map(str.strip, os.getenv('isMemberOf').split(',')))
+
 
     elif os.getenv('AUTH', 'NONE') == 'SAML':
         CLUSTER_CNAME = os.getenv('CLUSTER_CNAME', 'localhost')
