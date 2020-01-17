@@ -157,10 +157,10 @@ if os.getenv('AUTH', '') == 'SAML_MOCK' or os.getenv('AUTH', '') == 'DJANGO_LOGI
                            'u_astratest_myuw_test-support-admin'],
         }
 
-    elif os.getenv('AUTH', 'NONE') == 'DJANGO_LOGIN':
+    elif os.getenv('AUTH', '') == 'DJANGO_LOGIN':
         AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
 
-        UW_SAML_MOCK = {
+        DJANGO_LOGIN_MOCK_SAML = {
             'NAME_ID': 'mock-nameid',
             'SESSION_INDEX': 'mock-session',
             'SAML_USERS': [
@@ -181,37 +181,37 @@ if os.getenv('AUTH', '') == 'SAML_MOCK' or os.getenv('AUTH', '') == 'DJANGO_LOGI
             ]
         }
 
-        if os.getenv('django_login_username'):
-            UW_SAML_MOCK['SAML_USERS'][0]['username'] = os.getenv('django_login_username')
+        if os.getenv('DJANGO_LOGIN_USERNAME'):
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['username'] = os.getenv('DJANGO_LOGIN_USERNAME')
         else:
             raise ImproperlyConfigured('A username must be passed in the env to DJANGO_LOGIN as authentication backend')
 
-        if os.getenv('django_login_password'):
-            UW_SAML_MOCK['SAML_USERS'][0]['password'] = os.getenv('django_login_password')
+        if os.getenv('DJANGO_LOGIN_PASSWORD'):
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['password'] = os.getenv('DJANGO_LOGIN_PASSWORD')
         else:
             raise ImproperlyConfigured('A password must be passed in the env to DJANGO_LOGIN as authentication backend')
 
-        if os.getenv('django_login_email'):
-            UW_SAML_MOCK['SAML_USERS'][0]['email'] = os.getenv('django_login_email')
+        if os.getenv('DJANGO_LOGIN_EMAIL'):
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['email'] = os.getenv('DJANGO_LOGIN_EMAIL')
         else:
-            UW_SAML_MOCK['SAML_USERS'][0]['email'] = os.getenv('django_login_username') + '@uw.edu'
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['email'] = os.getenv('DJANGO_LOGIN_USERNAME') + '@uw.edu'
 
-        if os.getenv('django_login_uwnetid'):
-            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['uwnetid'] = list(map(str.strip, os.getenv('django_login_uwnetid').split(',')))
+        if os.getenv('DJANGO_LOGIN_UWNETID'):
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['uwnetid'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_UWNETID').split(',')))
         else:
-            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['uwnetid'] = [os.getenv('django_login_username')]
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['uwnetid'] = [os.getenv('DJANGO_LOGIN_USERNAME')]
 
-        if os.getenv('django_login_affiliations'):
-            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['affiliations'] = list(map(str.strip, os.getenv('django_login_affiliations').split(',')))
+        if os.getenv('DJANGO_LOGIN_AFFILIATIONS'):
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['affiliations'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_AFFILIATIONS').split(',')))
 
-        if os.getenv('django_login_eppn'):
-            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['eppn'] = list(map(str.strip, os.getenv('django_login_eppn').split(',')))
+        if os.getenv('DJANGO_LOGIN_EPPN'):
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['eppn'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_EPPN').split(',')))
 
-        if os.getenv('django_login_scopedAffiliations'):
-            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['scopedAffiliations'] = list(map(str.strip, os.getenv('django_login_scopedAffiliations').split(',')))
+        if os.getenv('DJANGO_LOGIN_SCOPEDAFFILIATIONS'):
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['scopedAffiliations'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_SCOPEDAFFILIATIONS').split(',')))
 
-        if os.getenv('django_login_isMemberOf'):
-            UW_SAML_MOCK['SAML_USERS'][0]['MOCK_ATTRIBUTES']['isMemberOf'] = list(map(str.strip, os.getenv('django_login_isMemberOf').split(',')))
+        if os.getenv('DJANGO_LOGIN_ISMEMBEROF'):
+            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['isMemberOf'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_ISMEMBEROF').split(',')))
 
     elif os.getenv('AUTH', '') == 'SAML':
         CLUSTER_CNAME = os.getenv('CLUSTER_CNAME', 'localhost')
