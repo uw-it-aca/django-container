@@ -1,4 +1,3 @@
-from django.core.exceptions import ImproperlyConfigured
 from django.core.management.utils import get_random_secret_key
 from django.urls import reverse_lazy
 import os
@@ -153,11 +152,14 @@ if os.getenv('AUTH', '').startswith('SAML'):
             'uwnetid': ['javerage'],
             'affiliations': ['student', 'member', 'alum', 'staff', 'employee'],
             'eppn': ['javerage@washington.edu'],
-            'scopedAffiliations': ['student@washington.edu', 'member@washington.edu'],
+            'scopedAffiliations': [
+                'student@washington.edu', 'member@washington.edu',
+                'alum@washington.edu', 'staff@washington.edu',
+                'employee@washington.edu'],
             'isMemberOf': ['u_test_group', 'u_test_another_group']
         }
         if os.getenv('AUTH', '') == 'SAML_MOCK':
-            MOCK_SAML_ATTRIBUTES = os.getenv('SAML_ATTRIBUTES', DEFAULT_SAML_ATTRIBUTES)
+            MOCK_SAML_ATTRIBUTES = DEFAULT_SAML_ATTRIBUTES
 
         else:
             AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
@@ -168,7 +170,7 @@ if os.getenv('AUTH', '').startswith('SAML'):
                     'username': os.getenv('DJANGO_LOGIN_USERNAME', 'javerage'),
                     'password': os.getenv('DJANGO_LOGIN_PASSWORD', ''),
                     'email': os.getenv('DJANGO_LOGIN_EMAIL', 'javerage@uw.edu'),
-                    'MOCK_ATTRIBUTES': os.getenv('SAML_ATTRIBUTES', DEFAULT_SAML_ATTRIBUTES),
+                    'MOCK_ATTRIBUTES': DEFAULT_SAML_ATTRIBUTES,
                 }]
             }
 
