@@ -74,11 +74,12 @@ elif os.getenv('DB', 'sqlite3') == 'postgres':
         }
     }
 
-if os.getenv('CACHE', 'none') == 'memcached':
+if os.getenv('CACHE', '') == 'memcached':
     RESTCLIENTS_DAO_CACHE_CLASS = 'myuw.util.cache_implementation.MyUWMemcachedCache'
-    RESTCLIENTS_MEMCACHED_SERVERS = (os.getenv('CACHE_NODE_0', '') + ':' + os.getenv('CACHE_PORT', '11211'), os.getenv('CACHE_NODE_1', '') + ':' + os.getenv('CACHE_PORT', '11211'),)
-
-
+    RESTCLIENTS_MEMCACHED_SERVERS = (
+        os.getenv('CACHE_NODE_0', '') + ':' + os.getenv('CACHE_PORT', '11211'),
+        os.getenv('CACHE_NODE_1', '') + ':' + os.getenv('CACHE_PORT', '11211'),
+    )
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -116,13 +117,13 @@ LOGGING = {
     },
     'handlers': {
         'stdout': {
-            'level':'INFO',
-            'class':'logging.StreamHandler',
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
             'stream': sys.stdout
         },
         'stderr': {
-            'level':'ERROR',
-            'class':'logging.StreamHandler',
+            'level': 'ERROR',
+            'class': 'logging.StreamHandler',
             'stream': sys.stderr
         },
     },
@@ -140,78 +141,36 @@ LOGGING = {
     }
 }
 
-if os.getenv('AUTH', '') == 'SAML_MOCK' or os.getenv('AUTH', '') == 'DJANGO_LOGIN' or os.getenv('AUTH', '') == 'SAML':
+if os.getenv('AUTH', '').startswith('SAML'):
     INSTALLED_APPS += ['uw_saml']
     LOGIN_URL = reverse_lazy('saml_login')
     LOGOUT_URL = reverse_lazy('saml_logout')
     SAML_USER_ATTRIBUTE = os.getenv('SAML_USER_ATTRIBUTE', 'uwnetid')
     SAML_FORCE_AUTHN = os.getenv('SAML_FORCE_AUTHN', False)
 
-    if os.getenv('AUTH', '') == 'SAML_MOCK':
-        MOCK_SAML_ATTRIBUTES = {
+    if os.getenv('AUTH', '') == 'SAML_MOCK' or os.getenv('AUTH', '') == 'SAML_DJANGO_LOGIN':
+        DEFAULT_SAML_ATTRIBUTES = {
             'uwnetid': ['javerage'],
             'affiliations': ['student', 'member', 'alum', 'staff', 'employee'],
             'eppn': ['javerage@washington.edu'],
             'scopedAffiliations': ['student@washington.edu', 'member@washington.edu'],
-            'isMemberOf': ['u_test_group', 'u_test_another_group',
-                           'u_astratest_myuw_test-support-admin'],
+            'isMemberOf': ['u_test_group', 'u_test_another_group']
         }
+        if os.getenv('AUTH', '') == 'SAML_MOCK':
+            MOCK_SAML_ATTRIBUTES = os.getenv('SAML_ATTRIBUTES', DEFAULT_SAML_ATTRIBUTES)
 
-    elif os.getenv('AUTH', '') == 'DJANGO_LOGIN':
-        AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
-
-        DJANGO_LOGIN_MOCK_SAML = {
-            'NAME_ID': 'mock-nameid',
-            'SESSION_INDEX': 'mock-session',
-            'SAML_USERS': [
-                {
-                    "username": None,
-                    "password": None,
-                    "email": None,
-                    "MOCK_ATTRIBUTES" : {
-                        'uwnetid': [None],
-                        'affiliations': ['student', 'member'],
-                        'eppn': ['javerage@washington.edu'],
-                        'scopedAffiliations': ['student@washington.edu', 'member@washington.edu'],
-                        'isMemberOf': [
-                            'u_test_group', 'u_test_another_group'
-                        ],
-                    }
-                }
-            ]
-        }
-
-        if os.getenv('DJANGO_LOGIN_USERNAME'):
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['username'] = os.getenv('DJANGO_LOGIN_USERNAME')
         else:
-            raise ImproperlyConfigured('A username must be passed in the env to DJANGO_LOGIN as authentication backend')
-
-        if os.getenv('DJANGO_LOGIN_PASSWORD'):
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['password'] = os.getenv('DJANGO_LOGIN_PASSWORD')
-        else:
-            raise ImproperlyConfigured('A password must be passed in the env to DJANGO_LOGIN as authentication backend')
-
-        if os.getenv('DJANGO_LOGIN_EMAIL'):
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['email'] = os.getenv('DJANGO_LOGIN_EMAIL')
-        else:
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['email'] = os.getenv('DJANGO_LOGIN_USERNAME') + '@uw.edu'
-
-        if os.getenv('DJANGO_LOGIN_UWNETID'):
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['uwnetid'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_UWNETID').split(',')))
-        else:
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['uwnetid'] = [os.getenv('DJANGO_LOGIN_USERNAME')]
-
-        if os.getenv('DJANGO_LOGIN_AFFILIATIONS'):
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['affiliations'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_AFFILIATIONS').split(',')))
-
-        if os.getenv('DJANGO_LOGIN_EPPN'):
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['eppn'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_EPPN').split(',')))
-
-        if os.getenv('DJANGO_LOGIN_SCOPEDAFFILIATIONS'):
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['scopedAffiliations'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_SCOPEDAFFILIATIONS').split(',')))
-
-        if os.getenv('DJANGO_LOGIN_ISMEMBEROF'):
-            DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES']['isMemberOf'] = list(map(str.strip, os.getenv('DJANGO_LOGIN_ISMEMBEROF').split(',')))
+            AUTHENTICATION_BACKENDS = ('django.contrib.auth.backends.ModelBackend',)
+            DJANGO_LOGIN_MOCK_SAML = {
+                'NAME_ID': 'mock-nameid',
+                'SESSION_INDEX': 'mock-session',
+                'SAML_USERS': [{
+                    'username': os.getenv('DJANGO_LOGIN_USERNAME', 'javerage'),
+                    'password': os.getenv('DJANGO_LOGIN_PASSWORD', ''),
+                    'email': os.getenv('DJANGO_LOGIN_EMAIL', 'javerage@uw.edu'),
+                    'MOCK_ATTRIBUTES': os.getenv('SAML_ATTRIBUTES', DEFAULT_SAML_ATTRIBUTES),
+                }]
+            }
 
     elif os.getenv('AUTH', '') == 'SAML':
         CLUSTER_CNAME = os.getenv('CLUSTER_CNAME', 'localhost')
@@ -249,7 +208,9 @@ if os.getenv('AUTH', '') == 'SAML_MOCK' or os.getenv('AUTH', '') == 'DJANGO_LOGI
                 'wantMessagesSigned': os.getenv('SP_WANT_MESSAGES_SIGNED', True),
                 'wantAssertionsSigned': os.getenv('SP_WANT_ASSERTIONS_SIGNED', False),
                 'wantAssertionsEncrypted': os.getenv('SP_WANT_ASSERTIONS_ENCRYPTED', False),
-                'requestedAuthnContext': ['urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken'] if os.getenv('SP_USE_2FA', False) else False,
+                'requestedAuthnContext': [
+                    'urn:oasis:names:tc:SAML:2.0:ac:classes:TimeSyncToken'
+                ] if os.getenv('SP_USE_2FA', False) else False,
                 'failOnAuthnContextMismatch': os.getenv('SP_USE_2FA', False),
             }
         }
@@ -436,7 +397,7 @@ if os.getenv('CALENDAR_ENV') == 'PROD' or os.getenv('CALENDAR_ENV') == 'EVAL':
     RESTCLIENTS_CALENDAR_HOST = 'https://www.trumba.com'
 
 if os.getenv('SDBMYUW_ENV') == 'PROD' or os.getenv('SDBMYUW_ENV') == 'EVAL':
-    RESTCLIENTS_SDBMYUW_DAO_CLASS='Live'
+    RESTCLIENTS_SDBMYUW_DAO_CLASS = 'Live'
     RESTCLIENTS_SDBMYUW_TIMEOUT = RESTCLIENTS_DEFAULT_TIMEOUT
     RESTCLIENTS_SDBMYUW_POOL_SIZE = RESTCLIENTS_DEFAULT_POOL_SIZE
     if os.getenv('SDBMYUW_ENV') == 'PROD':
