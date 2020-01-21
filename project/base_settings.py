@@ -127,12 +127,12 @@ LOGGING = {
         },
     },
     'loggers': {
-        '': {
+        'stdoutinfo': {
             'handlers': ['stdout'],
             'level': 'INFO',
             'propagate': False,
         },
-        '': {
+        'stderrerr': {
             'handlers': ['stderr'],
             'level': 'ERROR',
             'propagate': False,
