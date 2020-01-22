@@ -2,6 +2,7 @@ from django.core.management.utils import get_random_secret_key
 from django.urls import reverse_lazy
 import os
 import sys
+import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -104,38 +105,41 @@ TEMPLATES = [
     }
 ]
 
+
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'filters': {
         'require_debug_false': {
             '()': 'django.utils.log.RequireDebugFalse'
+        },
+        'stdout_stream': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelno < logging.WARN
+        },
+        'stderr_stream': {
+            '()': 'django.utils.log.CallbackFilter',
+            'callback': lambda record: record.levelno > logging.INFO
         }
     },
     'formatters': {
     },
     'handlers': {
         'stdout': {
-            'level': 'INFO',
             'class': 'logging.StreamHandler',
-            'stream': sys.stdout
+            'stream': sys.stdout,
+            'filters': ['stdout_stream']
         },
         'stderr': {
-            'level': 'ERROR',
             'class': 'logging.StreamHandler',
-            'stream': sys.stderr
+            'stream': sys.stderr,
+            'filters': ['stderr_stream']
         },
     },
     'loggers': {
         '': {
-            'handlers': ['stdout'],
-            'level': 'INFO',
-            'propagate': False,
-        },
-        '': {
-            'handlers': ['stderr'],
-            'level': 'ERROR',
-            'propagate': False,
+            'handlers': ['stdout', 'stderr'],
+            'level': 'DEBUG'
         }
     }
 }
