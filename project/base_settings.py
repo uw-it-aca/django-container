@@ -143,5 +143,5 @@ LOGGING = {
     }
 }
 
-from .auth_settings.py import *
-from .restclients_settings.py import *
+from .auth_settings import *
+from .restclients_settings import *
