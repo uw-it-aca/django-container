@@ -1,3 +1,4 @@
+from .base_settings import INSTALLED_APPS
 from django.urls import reverse_lazy
 import os
 
