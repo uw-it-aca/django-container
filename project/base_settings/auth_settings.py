@@ -29,7 +29,7 @@ if os.getenv('AUTH', '').startswith('SAML'):
                 'SESSION_INDEX': 'mock-session',
                 'SAML_USERS': [{
                     'username': os.getenv('DJANGO_LOGIN_USERNAME', 'javerage'),
-                    'password': os.getenv('DJANGO_LOGIN_PASSWORD', ''),
+                    'password': os.getenv('DJANGO_LOGIN_PASSWORD', 'javerage'),
                     'email': os.getenv('DJANGO_LOGIN_EMAIL', 'javerage@uw.edu'),
                     'MOCK_ATTRIBUTES': DEFAULT_SAML_ATTRIBUTES,
                 }]
