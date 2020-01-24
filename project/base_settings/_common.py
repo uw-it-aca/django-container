@@ -3,7 +3,7 @@ import os
 import sys
 import logging
 
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
 
 if os.getenv('ENV', 'localdev') == 'localdev':
