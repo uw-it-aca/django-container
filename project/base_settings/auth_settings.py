@@ -1,12 +1,10 @@
-from .base_settings import INSTALLED_APPS
-from django.urls import reverse_lazy
-import os
+from ._common import *
 
 
 if os.getenv('AUTH', '').startswith('SAML'):
     INSTALLED_APPS += ['uw_saml']
-    LOGIN_URL = reverse_lazy('saml_login')
-    LOGOUT_URL = reverse_lazy('saml_logout')
+    LOGIN_URL = '/saml/login'
+    LOGOUT_URL = '/saml/logout'
     SAML_USER_ATTRIBUTE = os.getenv('SAML_USER_ATTRIBUTE', 'uwnetid')
     SAML_FORCE_AUTHN = os.getenv('SAML_FORCE_AUTHN', False)
 
@@ -45,7 +43,7 @@ if os.getenv('AUTH', '').startswith('SAML'):
             'sp': {
                 'entityId': os.getenv('SAML_ENTITY_ID', 'https://' + CLUSTER_CNAME + '/saml'),
                 'assertionConsumerService': {
-                    'url': 'https://' + CLUSTER_CNAME + reverse_lazy('saml_sso'),
+                    'url': 'https://' + CLUSTER_CNAME + '/saml/sso',
                     'binding': 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST'
                 },
                 'singleLogoutService': {

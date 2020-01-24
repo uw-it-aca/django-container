@@ -1,4 +1,4 @@
-import os
+from ._common import *
 
 
 APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
