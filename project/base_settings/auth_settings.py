@@ -1,4 +1,5 @@
-from ._common import *
+import os
+from .common import INSTALLED_APPS, AUTHENTICATION_BACKENDS
 
 
 if os.getenv('AUTH', '').startswith('SAML'):
