@@ -72,13 +72,6 @@ elif os.getenv('DB', 'sqlite3') == 'postgres':
         }
     }
 
-if os.getenv('CACHE', '') == 'memcached':
-    RESTCLIENTS_DAO_CACHE_CLASS = 'myuw.util.cache_implementation.MyUWMemcachedCache'
-    RESTCLIENTS_MEMCACHED_SERVERS = (
-        os.getenv('CACHE_NODE_0', '') + ':' + os.getenv('CACHE_PORT', '11211'),
-        os.getenv('CACHE_NODE_1', '') + ':' + os.getenv('CACHE_PORT', '11211'),
-    )
-
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
