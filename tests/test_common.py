@@ -1,7 +1,7 @@
 import os
 import logging
 from unittest import TestCase
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch
 from .utils import SettingLoader
 from . import REQUIRED_INSTALLED_APPS, REQUIRED_MIDDLEWARE,\
     REQUIRED_STATICFILES_FINDERS, DEFAULT_TEMPLATES, DEFAULT_HANDLERS,\
