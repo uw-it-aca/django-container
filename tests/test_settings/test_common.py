@@ -179,3 +179,13 @@ class TestLogging(TestCase):
     def test_default_loggers(self):
         with SettingLoader('project.base_settings') as base_settings:
             self.assertDictEqual(DEFAULT_LOGGERS, base_settings.LOGGING['loggers'])
+
+class TestUtilCleanUp(TestCase):
+    def test_cleanup(self):
+        list_of_setting_utils_attr = None
+        with SettingLoader('project.base_settings.setting_utils') as setting_utils:
+            list_of_setting_utils_attr = setting_utils.list_of_attributes
+
+        with SettingLoader('project.base_settings') as base_settings:
+            for attr in list_of_setting_utils_attr:
+                self.assertFalse(hasattr(base_settings, attr))
