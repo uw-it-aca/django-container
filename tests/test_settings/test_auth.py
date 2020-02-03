@@ -16,6 +16,10 @@ class BaseAuthTest:
             self.assertEqual(self.mock_env['SAML_USER_ATTRIBUTE'], base_settings.SAML_USER_ATTRIBUTE)
             self.assertTrue(base_settings.SAML_FORCE_AUTHN)
 
+        self.mock_env['SAML_FORCE_AUTHN'] = 'False'
+        with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
+            self.assertFalse(base_settings.SAML_FORCE_AUTHN)
+
 class TestNoAuthBackend(TestCase):
     def test_common_attributes(self):
         with SettingLoader('project.base_settings') as base_settings:

@@ -7,7 +7,7 @@ if os.getenv('AUTH', '').startswith('SAML'):
     LOGIN_URL = '/saml/login'
     LOGOUT_URL = '/saml/logout'
     SAML_USER_ATTRIBUTE = os.getenv('SAML_USER_ATTRIBUTE', 'uwnetid')
-    SAML_FORCE_AUTHN = os.getenv('SAML_FORCE_AUTHN', False)
+    SAML_FORCE_AUTHN = os.getenv('SAML_FORCE_AUTHN', '').lower() in ['true', '1', 't', 'y', 'yes']
 
     if os.getenv('AUTH', '') == 'SAML_MOCK' or os.getenv('AUTH', '') == 'SAML_DJANGO_LOGIN':
         DEFAULT_SAML_ATTRIBUTES = {
