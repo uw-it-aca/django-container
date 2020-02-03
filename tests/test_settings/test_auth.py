@@ -1,5 +1,5 @@
 from unittest import TestCase
-from .utils import SettingLoader
+from ..utils import SettingLoader
 
 class BaseAuthTest:
     def test_common_attributes(self):

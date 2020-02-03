@@ -2,15 +2,10 @@ import os
 import logging
 from unittest import TestCase
 from unittest.mock import patch
-from .utils import SettingLoader
+from ..utils import SettingLoader
 from . import REQUIRED_INSTALLED_APPS, REQUIRED_MIDDLEWARE,\
     REQUIRED_STATICFILES_FINDERS, DEFAULT_TEMPLATES, DEFAULT_HANDLERS,\
     DEFAULT_LOGGERS
-
-class TestBaseDir(TestCase):
-    def test_base_dir(self):
-        with SettingLoader('project.base_settings') as base_settings:
-            self.assertEqual(base_settings.BASE_DIR, os.path.dirname(os.path.dirname(__file__)))
 
 class TestSecretKey(TestCase):
     def test_localdev_with_django_secret(self):
