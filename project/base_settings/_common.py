@@ -107,9 +107,6 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'filters': {
-        'require_debug_false': {
-            '()': 'django.utils.log.RequireDebugFalse'
-        },
         'stdout_stream': {
             '()': 'django.utils.log.CallbackFilter',
             'callback': lambda record: record.levelno < logging.WARN
@@ -136,7 +133,7 @@ LOGGING = {
     'loggers': {
         '': {
             'handlers': ['stdout', 'stderr'],
-            'level': 'DEBUG'
+            'level': 'INFO' if os.getenv('ENV', 'dev') == 'prod' else 'DEBUG'
         }
     }
 }
