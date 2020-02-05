@@ -235,3 +235,10 @@ if os.getenv('R25_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_R25_SSL_VERSION = 'TLSv1_2'
     RESTCLIENTS_R25_BASIC_AUTH = os.getenv('R25_BASIC_AUTH', '')
     RESTCLIENTS_R25_HOST = 'https://webservices.collegenet.com'
+
+MEMCACHED_SERVER_COUNT = int(os.getenv('MEMCACHED_SERVER_COUNT', 0))
+if MEMCACHED_SERVER_COUNT > 0:
+    MEMCACHED_SERVER_SPEC = os.getenv('MEMCACHED_SERVER_SPEC')
+    RESTCLIENTS_MEMCACHED_SERVERS = tuple(MEMCACHED_SERVER_SPEC.format(n)
+                                          for n in range(
+                                                  MEMCACHED_SERVER_COUNT))
