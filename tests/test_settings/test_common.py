@@ -150,10 +150,6 @@ class TestLogging(TestCase):
 
     def test_default_filters(self):
         with SettingLoader('project.base_settings') as base_settings:
-            self.assertIn('require_debug_false', base_settings.LOGGING['filters'])
-            self.assertIn('()', base_settings.LOGGING['filters']['require_debug_false'])
-            self.assertEqual('django.utils.log.RequireDebugFalse', base_settings.LOGGING['filters']['require_debug_false']['()'])
-
             class TestObject:
                 def __init__(self, levelno):
                     self.levelno = levelno
