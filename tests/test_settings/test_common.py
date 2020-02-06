@@ -1,5 +1,6 @@
 import os
 import logging
+from copy import deepcopy
 from unittest import TestCase
 from unittest.mock import patch
 from ..utils import SettingLoader
@@ -175,6 +176,12 @@ class TestLogging(TestCase):
     def test_default_loggers(self):
         with SettingLoader('project.base_settings') as base_settings:
             self.assertDictEqual(DEFAULT_LOGGERS, base_settings.LOGGING['loggers'])
+
+    def test_prod_loggers(self):
+        with SettingLoader('project.base_settings', ENV='prod') as base_settings:
+            prod_logger = deepcopy(DEFAULT_LOGGERS)
+            prod_logger['']['level'] = 'INFO'
+            self.assertDictEqual(prod_logger, base_settings.LOGGING['loggers'])
 
 class TestUtilCleanUp(TestCase):
     def test_cleanup(self):
