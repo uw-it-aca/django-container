@@ -1,4 +1,4 @@
-from ._common import *
+import os
 
 
 APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
@@ -8,6 +8,13 @@ RESTCLIENTS_DAO_CACHE_CLASS = os.getenv('CACHE_CLASS', '')
 RESTCLIENTS_DEFAULT_TIMEOUT = 2
 RESTCLIENTS_DEFAULT_POOL_SIZE = 10
 RESTCLIENTS_DEFAULT_ENVS = ['PROD', 'EVAL']
+
+if os.getenv('CACHE', '') == 'memcached':
+    RESTCLIENTS_DAO_CACHE_CLASS = 'myuw.util.cache_implementation.MyUWMemcachedCache'
+    RESTCLIENTS_MEMCACHED_SERVERS = (
+        os.getenv('CACHE_NODE_0', '') + ':' + os.getenv('CACHE_PORT', '11211'),
+        os.getenv('CACHE_NODE_1', '') + ':' + os.getenv('CACHE_PORT', '11211'),
+    )
 
 if os.getenv('GWS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_GWS_DAO_CLASS = 'Live'
