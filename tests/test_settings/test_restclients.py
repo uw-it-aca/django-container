@@ -31,8 +31,12 @@ class TestGlobals(TestCase):
 
 class TestCache(TestCase):
     def test_memcached(self):
-        with SettingLoader('project.base_settings', CACHE='memcached') as base_settings:
-            self.assertEqual('myuw.util.cache_implementation.MyUWMemcachedCache', base_settings.RESTCLIENTS_DAO_CACHE_CLASS)
+        mock_memcached = {
+            'MEMCACHED_SERVER_COUNT': 1,
+            'MEMCACHED_SERVER_SPEC': 'mock_memcached_{}:11211'
+        }
+        with SettingLoader('project.base_settings', **mock_memcached) as base_settings:
+            self.assertSequenceEqual(('mock_memcached_0:11211',), base_settings.RESTCLIENTS_MEMCACHED_SERVERS)
 
 class TestRestClients(TestCase):
     def test_settings_not_overwritten(self):
