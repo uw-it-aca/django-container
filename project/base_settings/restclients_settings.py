@@ -11,10 +11,14 @@ RESTCLIENTS_DEFAULT_ENVS = ['PROD', 'EVAL']
 
 if os.getenv('CACHE', '') == 'memcached':
     RESTCLIENTS_DAO_CACHE_CLASS = 'myuw.util.cache_implementation.MyUWMemcachedCache'
-    RESTCLIENTS_MEMCACHED_SERVERS = (
-        os.getenv('CACHE_NODE_0', '') + ':' + os.getenv('CACHE_PORT', '11211'),
-        os.getenv('CACHE_NODE_1', '') + ':' + os.getenv('CACHE_PORT', '11211'),
-    )
+    RESTCLIENTS_MEMCACHED_SERVERS = ()
+    for i in range(10):
+        node = os.getenv("CACHE_NODE_{}".format(i), None)
+        if node:
+            RESTCLIENTS_MEMCACHED_SERVERS += ("{}:{}".format(
+                node, os.getenv('CACHE_PORT', '11211')),)
+        else:
+            break
 
 if os.getenv('GWS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_GWS_DAO_CLASS = 'Live'
