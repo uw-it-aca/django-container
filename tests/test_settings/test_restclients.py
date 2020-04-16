@@ -32,7 +32,7 @@ class TestGlobals(TestCase):
 class TestCache(TestCase):
     def test_memcached(self):
         mock_memcached = {
-            'MEMCACHED_SERVER_COUNT': 1,
+            'MEMCACHED_SERVER_COUNT': '1',
             'MEMCACHED_SERVER_SPEC': 'mock_memcached_{}:11211'
         }
         with SettingLoader('project.base_settings', **mock_memcached) as base_settings:
