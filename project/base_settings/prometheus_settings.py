@@ -1,3 +1,7 @@
+import os
+from .common import INSTALLED_APPS, MIDDLEWARE, DATABASES, CACHES
+
+
 INSTALLED_APPS += ['django_prometheus']
 
 MIDDLEWARE = ['django_prometheus.middleware.PrometheusBeforeMiddleware'] + \
