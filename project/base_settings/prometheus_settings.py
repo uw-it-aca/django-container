@@ -1,5 +1,5 @@
 import os
-from .common import INSTALLED_APPS, MIDDLEWARE, DATABASES, CACHES
+from .common import INSTALLED_APPS, MIDDLEWARE, DATABASES
 
 
 INSTALLED_APPS += ['django_prometheus']
@@ -14,12 +14,3 @@ elif os.getenv('DB', 'sqlite3') == 'mysql':
     DATABASES['default']['ENGINE'] = 'django_prometheus.db.backends.mysql'
 elif os.getenv('DB', 'sqlite3') == 'postgres':
     DATABASES['default']['ENGINE'] = 'django_prometheus.db.backends.postgresql'
-
-if os.getenv('CACHE', '') == 'filebased':
-    CACHES['default']['ENGINE'] = 'django_prometheus.cache.backends.filebased.FileBasedCache'
-elif os.getenv('CACHE', '') == 'memcached':
-    CACHES['default']['ENGINE'] = 'django_prometheus.cache.backends.memcached.MemcachedCache'
-elif os.getenv('CACHE', '') == 'redis':
-    CACHES['default']['ENGINE'] = 'django_prometheus.cache.backends.memcached.RedisCache'
-elif os.getenv('CACHE', '') == 'locmem':
-    CACHES['default']['ENGINE'] = 'django_prometheus.cache.backends.memcached.LocMemCache'
