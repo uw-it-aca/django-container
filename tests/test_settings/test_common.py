@@ -17,7 +17,7 @@ class TestSecretKey(TestCase):
         with patch('django.core.management.utils.get_random_secret_key', return_value='mockeddjangosecret'):
             with SettingLoader('project.base_settings', ENV='localdev') as base_settings:
                 self.assertEqual(base_settings.SECRET_KEY, 'mockeddjangosecret')
-        
+
     def test_notlocaldev_with_django_secret(self):
         with SettingLoader('project.base_settings', ENV='notlocaldev', DJANGO_SECRET='testdjangosecret') as base_settings:
             self.assertEqual(base_settings.SECRET_KEY, 'testdjangosecret')
@@ -48,7 +48,7 @@ class TestDatabases(TestCase):
     def test_without_db(self):
         sqlite3_db = {
             'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
+                'ENGINE': 'django_prometheus.db.backends.sqlite3',
                 'NAME': '',
             }
         }
@@ -59,7 +59,7 @@ class TestDatabases(TestCase):
     def test_db_sqlite3(self):
         sqlite3_db = {
             'default': {
-                'ENGINE': 'django.db.backends.sqlite3',
+                'ENGINE': 'django_prometheus.db.backends.sqlite3',
                 'NAME': '',
             }
         }
@@ -70,7 +70,7 @@ class TestDatabases(TestCase):
     def test_db_mysql_default(self):
         mysql_db = {
             'default': {
-                'ENGINE': 'django.db.backends.mysql',
+                'ENGINE': 'django_prometheus.db.backends.mysql',
                 'HOST': 'localhost',
                 'NAME': 'db',
                 'USER': None,
@@ -89,7 +89,7 @@ class TestDatabases(TestCase):
         }
         mysql_db = {
             'default': {
-                'ENGINE': 'django.db.backends.mysql',
+                'ENGINE': 'django_prometheus.db.backends.mysql',
                 'HOST': database_env_values['DATABASE_HOSTNAME'],
                 'NAME': database_env_values['DATABASE_DB_NAME'],
                 'USER': database_env_values['DATABASE_USERNAME'],
@@ -102,7 +102,7 @@ class TestDatabases(TestCase):
     def test_db_postgres_default(self):
         postgres_db = {
             'default': {
-                'ENGINE': 'django.db.backends.postgresql',
+                'ENGINE': 'django_prometheus.db.backends.postgresql',
                 'HOST': 'localhost',
                 'NAME': 'db',
                 'USER': None,
@@ -121,7 +121,7 @@ class TestDatabases(TestCase):
         }
         postgres_db = {
             'default': {
-                'ENGINE': 'django.db.backends.postgresql',
+                'ENGINE': 'django_prometheus.db.backends.postgresql',
                 'HOST': database_env_values['DATABASE_HOSTNAME'],
                 'NAME': database_env_values['DATABASE_DB_NAME'],
                 'USER': database_env_values['DATABASE_USERNAME'],
