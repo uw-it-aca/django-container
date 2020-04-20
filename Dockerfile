@@ -25,7 +25,7 @@ RUN apt-get  update -y&& \
     python3-venv \
     libxml2-dev \
     libxmlsec1-dev \
-    python-pip 
+    python-pip
 
 RUN locale-gen en_US.UTF-8
 # locale.getdefaultlocale() searches in this order
@@ -37,6 +37,7 @@ ENV LANG en_US.UTF-8
 RUN python3 -m venv /app/
 RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi
 RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
+RUN . /app/bin/activate && pip install django-prometheus
 ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
@@ -65,7 +66,7 @@ RUN groupadd -r acait -g 1000 && \
     chown -R acait:acait /static &&\
     chown -R acait:acait /home/acait &&\
     chown -R acait:acait /var/lock/apache2 &&\
-    chown -R acait:acait /var/run/apache2  
+    chown -R acait:acait /var/run/apache2
 
 RUN chmod -R +x /scripts
 
