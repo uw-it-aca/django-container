@@ -91,7 +91,7 @@ if os.getenv('CODA_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     if os.getenv('CODA_ENV') == 'PROD':
         RESTCLIENTS_CODA_HOST = 'https://coda.uw.edu'
     else:
-        RESTCLIENTS_CODA_HOST = 'https://coda-test.uw.edu'
+        RESTCLIENTS_CODA_HOST = 'https://test.coda.uw.edu'
 
 if os.getenv('CATALYST_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_CATALYST_DAO_CLASS = 'Live'
