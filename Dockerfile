@@ -88,7 +88,7 @@ RUN apt-get install -y nodejs npm gcc-4.8 unixodbc-dev
 
 USER acait
 RUN . /app/bin/activate &&\
-    pip install pycodestyle coverage &&\
+    pip install pycodestyle coverage nodeenv &&\
     nodeenv -p &&\
     npm install npm@latest &&\
     npm install jshint -g &&\
