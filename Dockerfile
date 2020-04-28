@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04 as django-container
 WORKDIR /app/
 ENV PYTHONUNBUFFERED 1
 RUN apt-get -y update && \
@@ -78,3 +78,29 @@ ENV DB sqlite3
 ENV ENV localdev
 
 CMD [ "/scripts/start.sh" ]
+
+
+FROM django-container as django-test-container
+
+# install test tooling
+USER root
+RUN apt-get install -y nodejs npm gcc-4.8 unixodbc-dev
+
+USER acait
+RUN . /app/bin/activate &&\
+    pip install pycodestyle coverage nodeenv &&\
+    nodeenv -p &&\
+    npm install npm@latest &&\
+    npm install jshint -g &&\
+    npm install eslint -g &&\
+    npm install stylelint -g &&\
+    npm install tslib -g &&\
+    npm install datejs -g &&\
+    npm install jquery -g &&\
+    npm install moment -g &&\
+    npm install moment-timezone -g &&\
+    npm install jsdom@15.2.1 -g &&\
+    npm install mocha -g &&\
+    npm install nyc -g &&\
+    npm install sinon -g &&\
+    npm install coveralls -g
