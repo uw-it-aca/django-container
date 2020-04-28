@@ -9,7 +9,7 @@ script:
   - nose2
   - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USERNAME" --password-stdin
   - docker build --target django-container -t django-container .
-  - docker build --target django-test-container -t django-test-container .
+  - docker build -t django-test-container .
   - FIXED_BRANCH=$(echo $TRAVIS_BRANCH | tr / -)
   - docker tag django-container "$DOCKER_USERNAME/django-container:$FIXED_BRANCH"
   - docker tag django-test-container "$DOCKER_USERNAME/django-test-container:$FIXED_BRANCH"
