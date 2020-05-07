@@ -167,7 +167,7 @@ if os.getenv('HFS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     if os.getenv('HFS_ENV') == 'PROD':
         RESTCLIENTS_HFS_HOST = 'https://api.hfs.washington.edu'
     else:
-        RESTCLIENTS_HFS_HOST = 'https://tapi.washington.edu'
+        RESTCLIENTS_HFS_HOST = 'https://tapi.hfs.washington.edu'
 
 if os.getenv('ADSEL_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_ADSEL_DAO_CLASS = 'Live'
