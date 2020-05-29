@@ -238,6 +238,17 @@ if os.getenv('HFS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     else:
         RESTCLIENTS_HFS_HOST = 'https://tapi.hfs.washington.edu'
 
+if os.getenv('UWIDP_ENV') in RESTCLIENTS_DEFAULT_ENVS:
+    RESTCLIENTS_UWIDP_DAO_CLASS = 'Live'
+    RESTCLIENTS_UWIDP_TIMEOUT = os.getenv(
+        "UWIDP_TIMEOUT", RESTCLIENTS_DEFAULT_TIMEOUT)
+    RESTCLIENTS_UWIDP_POOL_SIZE = os.getenv(
+        "UWIDP_POOL_SIZE", RESTCLIENTS_DEFAULT_POOL_SIZE)
+    if os.getenv('UWIDP_ENV') == 'PROD':
+        RESTCLIENTS_UWIDP_HOST = 'https://idp.u.washington.edu'
+    else:
+        RESTCLIENTS_UWIDP_HOST = 'https://idp-eval.u.washington.edu'
+
 if os.getenv('ADSEL_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_ADSEL_DAO_CLASS = 'Live'
     RESTCLIENTS_ADSEL_TIMEOUT = os.getenv(

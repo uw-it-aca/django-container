@@ -59,6 +59,7 @@ class TestRestClients(TestCase):
             'CALENDAR_ENV',
             'SDBMYUW_ENV',
             'HFS_ENV',
+            'UWIDP_ENV',
             'ADSEL_ENV',
             'UPASS_ENV',
             'IASYSTEM_UW_ENV',
