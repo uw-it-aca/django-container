@@ -19,6 +19,7 @@ RUN apt-get  update -y&& \
     tar \
     curl \
     wget \
+    netcat \
     python-setuptools \
     build-essential\
     python3.6-dev \

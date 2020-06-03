@@ -24,3 +24,7 @@ then
   fi
 
 fi
+
+# Prepare for readinessProbe
+touch /tmp/ready
+
