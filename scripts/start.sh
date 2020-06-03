@@ -35,6 +35,9 @@ then
 
 else
 
+  # Prepare for readinessProbe
+  touch /tmp/ready
+
   # Start Apache server in foreground
   exec /usr/sbin/apachectl -DFOREGROUND
 
