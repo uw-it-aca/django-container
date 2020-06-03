@@ -17,4 +17,4 @@ then
 fi
 
 # planted in the filesystem by successful deploy.sh
-echo cat /tmp/ready
+cat /tmp/ready
