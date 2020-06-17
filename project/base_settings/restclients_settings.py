@@ -180,7 +180,7 @@ if os.getenv('MYPLAN_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_MYPLAN_CERT_FILE = APPLICATION_CERT_PATH
     RESTCLIENTS_MYPLAN_KEY_FILE = APPLICATION_KEY_PATH
     if os.getenv('MYPLAN_ENV') == 'PROD':
-        RESTCLIENTS_MYPLAN_HOST = 'https://ws.uwstdent.washington.edu'
+        RESTCLIENTS_MYPLAN_HOST = 'https://ws.uwstudent.washington.edu'
     else:
         RESTCLIENTS_MYPLAN_HOST = 'https://ws-eval.uwstudent.washington.edu'
 
