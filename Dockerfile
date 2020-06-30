@@ -10,6 +10,7 @@ RUN apt-get -y update && \
 # Install system dependencies
 RUN apt-get  update -y&& \
     apt-get install -y \
+    dumb-init \
     git \
     hostname \
     locales \
@@ -78,8 +79,7 @@ ENV PORT 8000
 ENV DB sqlite3
 ENV ENV localdev
 
-CMD [ "/scripts/start.sh" ]
-
+CMD ["dumb-init", "--rewrite", "15:28", "/scripts/start.sh"]
 
 FROM django-container as django-test-container
 
