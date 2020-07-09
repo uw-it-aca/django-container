@@ -80,12 +80,16 @@ if os.getenv('NWS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
         "NWS_TIMEOUT", RESTCLIENTS_DEFAULT_TIMEOUT)
     RESTCLIENTS_NWS_POOL_SIZE = os.getenv(
         "NWS_POOL_SIZE", RESTCLIENTS_DEFAULT_POOL_SIZE)
-    RESTCLIENTS_NWS_CERT_FILE = APPLICATION_CERT_PATH
-    RESTCLIENTS_NWS_KEY_FILE = APPLICATION_KEY_PATH
+    RESTCLIENTS_NWS_AUTH_DAO_CLASS = RESTCLIENTS_NWS_DAO_CLASS
+    RESTCLIENTS_NWS_AUTH_TIMEOUT = RESTCLIENTS_NWS_TIMEOUT
+    RESTCLIENTS_NWS_AUTH_POOL_SIZE = RESTCLIENTS_NWS_POOL_SIZE
+    RESTCLIENTS_NWS_AUTH_SECRET = os.getenv('NWS_AUTH_SECRET')
     if os.getenv('NWS_ENV') == 'PROD':
-        RESTCLIENTS_NWS_HOST = 'https://api.concert.uw.edu'
+        RESTCLIENTS_NWS_HOST = 'https://api.notify.sis.uw.edu'
+        RESTCLIENTS_NWS_AUTH_HOST = 'https://auth.api.notify.sis.uw.edu'
     else:
-        RESTCLIENTS_NWS_HOST = 'https://api.test.concert.uw.edu'
+        RESTCLIENTS_NWS_HOST = 'https://api.notify-dev.sis.uw.edu'
+        RESTCLIENTS_NWS_AUTH_HOST = 'https://auth.api.notify-dev.sis.uw.edu'
 
 if os.getenv('UWNETID_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_UWNETID_DAO_CLASS = 'Live'
