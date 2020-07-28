@@ -12,11 +12,10 @@ if all([os.getenv('CLUSTER_CNAME'), os.getenv('HOSTNAME')]):
         os.getenv('HOSTNAME'),                          # Internal hostname
         socket.gethostbyname(os.getenv('HOSTNAME')),    # IP
     ]
-else:
-    ALLOWED_HOSTS = ['*']
 
 if os.getenv('ENV', 'localdev') == 'localdev':
     SECRET_KEY = os.getenv('DJANGO_SECRET', get_random_secret_key())
+    ALLOWED_HOSTS = ['*']
 else:
     SECRET_KEY = os.getenv('DJANGO_SECRET', None)
 
