@@ -1,10 +1,19 @@
 from django.core.management.utils import get_random_secret_key
 import os
 import sys
+import socket
 import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-
+ 
+if all([os.getenv('CLUSTER_CNAME'), os.getenv('HOSTNAME')]):
+    ALLOWED_HOSTS = [
+        os.getenv('CLUSTER_CNAME'),                     # External hostname
+        os.getenv('HOSTNAME'),                          # Internal hostname
+        socket.gethostbyname(os.getenv('HOSTNAME')),    # IP
+    ]
+else:
+    ALLOWED_HOSTS = ['*']
 
 if os.getenv('ENV', 'localdev') == 'localdev':
     SECRET_KEY = os.getenv('DJANGO_SECRET', get_random_secret_key())
@@ -61,7 +70,7 @@ elif os.getenv('DB', 'sqlite3') == 'mysql':
             'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
         }
     }
-elif os.getenv('DB', 'sqlite3') == 'postgres':
+elif os.getenv('DB', 'sqhostnameslite3') == 'postgres':
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
