@@ -105,3 +105,5 @@ RUN . /app/bin/activate &&\
     npm install nyc -g &&\
     npm install sinon -g &&\
     npm install coveralls -g
+
+ENV NODE_PATH=/app/lib/node_modules
