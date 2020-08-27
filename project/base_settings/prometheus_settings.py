@@ -1,12 +1,10 @@
 import os
 from .common import INSTALLED_APPS, MIDDLEWARE, DATABASES
 
+INSTALLED_APPS.append('django_prometheus')
 
-INSTALLED_APPS += ['django_prometheus']
-
-MIDDLEWARE = ['django_prometheus.middleware.PrometheusBeforeMiddleware'] + \
-    MIDDLEWARE + \
-    ['django_prometheus.middleware.PrometheusAfterMiddleware']
+MIDDLEWARE.insert(0, 'django_prometheus.middleware.PrometheusBeforeMiddleware')
+MIDDLEWARE.append('django_prometheus.middleware.PrometheusAfterMiddleware')
 
 if os.getenv('DB', 'sqlite3') == 'sqlite3':
     DATABASES['default']['ENGINE'] = 'django_prometheus.db.backends.sqlite3'
