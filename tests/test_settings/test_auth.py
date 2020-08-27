@@ -1,7 +1,8 @@
 from unittest import TestCase
 from ..utils import SettingLoader
 
-class BaseAuthTest:
+
+class SAMLBaseAuthTest:
     def test_common_attributes(self):
         with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
             self.assertIn('uw_saml', base_settings.INSTALLED_APPS)
@@ -20,7 +21,8 @@ class BaseAuthTest:
         with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
             self.assertFalse(base_settings.SAML_FORCE_AUTHN)
 
-class TestNoAuthBackend(TestCase):
+
+class NoAuthBackendTest(TestCase):
     def test_common_attributes(self):
         with SettingLoader('project.base_settings') as base_settings:
             self.assertNotIn('uw_saml', base_settings.INSTALLED_APPS)
@@ -29,7 +31,8 @@ class TestNoAuthBackend(TestCase):
             self.assertFalse(hasattr(base_settings, 'SAML_USER_ATTRIBUTE'))
             self.assertFalse(hasattr(base_settings, 'SAML_FORCE_AUTHN'))
 
-class TestSAML(TestCase, BaseAuthTest):
+
+class SAMLTest(TestCase, SAMLBaseAuthTest):
     def setUp(self):
         self.mock_env = {
             'AUTH': 'SAML',
@@ -39,11 +42,12 @@ class TestSAML(TestCase, BaseAuthTest):
     def test_attributes(self):
         with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
             self.assertEqual(self.mock_env['CLUSTER_CNAME'], base_settings.CLUSTER_CNAME)
-            
+
             # Just tests that UW_SAML attributes exists
             self.assertIsNotNone(base_settings.UW_SAML)
 
-class TestSAMLMOCK(TestCase, BaseAuthTest):
+
+class SAMLMockTest(TestCase, SAMLBaseAuthTest):
     def setUp(self):
         self.mock_env = {
             'AUTH': 'SAML_MOCK',
@@ -53,10 +57,11 @@ class TestSAMLMOCK(TestCase, BaseAuthTest):
         with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
             self.assertIsNotNone(base_settings.DEFAULT_SAML_ATTRIBUTES)
             self.assertIsNotNone(base_settings.MOCK_SAML_ATTRIBUTES)
-            
+
             self.assertDictEqual(base_settings.DEFAULT_SAML_ATTRIBUTES, base_settings.MOCK_SAML_ATTRIBUTES)
 
-class TestSAMLDJANGOLOGIN(TestCase, BaseAuthTest):
+
+class SAMLDjangoLoginTest(TestCase, SAMLBaseAuthTest):
     def setUp(self):
         self.mock_env = {
             'AUTH': 'SAML_DJANGO_LOGIN',
@@ -73,8 +78,48 @@ class TestSAMLDJANGOLOGIN(TestCase, BaseAuthTest):
     def test_django_user_conf(self):
         with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
             self.assertEqual(len(base_settings.DJANGO_LOGIN_MOCK_SAML['SAML_USERS']), 1)
-            
+
             self.assertEqual(base_settings.DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['username'], self.mock_env['DJANGO_LOGIN_USERNAME'])
             self.assertEqual(base_settings.DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['password'], self.mock_env['DJANGO_LOGIN_PASSWORD'])
             self.assertEqual(base_settings.DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['email'], self.mock_env['DJANGO_LOGIN_EMAIL'])
             self.assertDictEqual(base_settings.DJANGO_LOGIN_MOCK_SAML['SAML_USERS'][0]['MOCK_ATTRIBUTES'], base_settings.DEFAULT_SAML_ATTRIBUTES)
+
+
+class BLTITest(TestCase):
+    def setUp(self):
+        self.mock_env = {
+            'AUTH': 'BLTI',
+            'LTI_CONSUMERS': '{"0000-0000-0000": "01234567ABCDEF"}',
+            'BLTI_AES_KEY': 'AE91AE1DF0E6FB44',
+            'BLTI_AES_IV': '01C8837249AE8667',
+        }
+
+    def test_attributes(self):
+        with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
+            self.assertIn('blti', base_settings.INSTALLED_APPS)
+            self.assertIn('blti.middleware.SessionHeaderMiddleware', base_settings.MIDDLEWARE)
+            self.assertIn('blti.middleware.CSRFHeaderMiddleware', base_settings.MIDDLEWARE)
+            self.assertDictEqual({"0000-0000-0000": "01234567ABCDEF"}, base_settings.LTI_CONSUMERS)
+
+
+class MultipleAuthTest(TestCase):
+    def test_valid_auth_list(self):
+        mock_env = {
+            'AUTH': 'SAML BLTI',
+        }
+
+        with SettingLoader('project.base_settings', **mock_env) as base_settings:
+            self.assertIn('uw_saml', base_settings.INSTALLED_APPS)
+            self.assertIn('blti', base_settings.INSTALLED_APPS)
+
+    def test_invalid_auth_list(self):
+        mock_env = {
+            'AUTH': 'SAML SAML_MOCK',
+        }
+
+        with SettingLoader('project.base_settings', **mock_env) as base_settings:
+            self.assertIn('uw_saml', base_settings.INSTALLED_APPS)
+
+            # uw_saml app must not appear in INSTALLED_APPS more then once
+            self.assertEqual(len(set(base_settings.INSTALLED_APPS)),
+                             len(base_settings.INSTALLED_APPS))
