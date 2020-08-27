@@ -5,7 +5,8 @@ from .setting_utils import parse_bool_from_str
 
 for auth in os.getenv('AUTH', '').split(' '):
     if auth.startswith('SAML') and 'uw_saml' not in INSTALLED_APPS:
-        INSTALLED_APPS += ['uw_saml']
+        INSTALLED_APPS.append('uw_saml')
+
         LOGIN_URL = '/saml/login'
         LOGOUT_URL = '/saml/logout'
         SAML_USER_ATTRIBUTE = os.getenv('SAML_USER_ATTRIBUTE', 'uwnetid')
@@ -82,7 +83,7 @@ for auth in os.getenv('AUTH', '').split(' '):
             }
 
     if auth.startswith('BLTI') and 'blti' not in INSTALLED_APPS:
-        INSTALLED_APPS += ['blti']
+        INSTALLED_APPS.append('blti')
 
         MIDDLEWARE.insert(0, 'blti.middleware.SessionHeaderMiddleware')
         MIDDLEWARE.insert(0, 'blti.middleware.CSRFHeaderMiddleware')
