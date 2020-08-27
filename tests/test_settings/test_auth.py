@@ -98,6 +98,7 @@ class BLTITest(TestCase):
         with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
             self.assertIn('blti', base_settings.INSTALLED_APPS)
             self.assertIn('blti.middleware.SessionHeaderMiddleware', base_settings.MIDDLEWARE)
+            self.assertIn('blti.middleware.CSRFHeaderMiddleware', base_settings.MIDDLEWARE)
             self.assertDictEqual({"0000-0000-0000": "01234567ABCDEF"}, base_settings.LTI_CONSUMERS)
 
 

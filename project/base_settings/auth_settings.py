@@ -84,8 +84,8 @@ for auth in os.getenv('AUTH', '').split(' '):
     if auth.startswith('BLTI') and 'blti' not in INSTALLED_APPS:
         INSTALLED_APPS += ['blti']
 
-        MIDDLEWARE = ['blti.middleware.CSRFHeaderMiddleware',
-                      'blti.middleware.SessionHeaderMiddleware'] + MIDDLEWARE
+        MIDDLEWARE.insert(0, 'blti.middleware.SessionHeaderMiddleware')
+        MIDDLEWARE.insert(0, 'blti.middleware.CSRFHeaderMiddleware')
 
         # BLTI consumer key:secret pairs in env as a serialized dict
         LTI_CONSUMERS = json.loads(os.getenv('LTI_CONSUMERS', '{}'))
