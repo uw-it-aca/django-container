@@ -80,6 +80,20 @@ elif os.getenv('DB', 'sqlite3') == 'postgres':
         }
     }
 
+MEMCACHED_SERVER_COUNT = int(os.getenv('MEMCACHED_SERVER_COUNT', 0))
+if (os.getenv('SESSION_BACKEND', '') == 'MEMCACHED'
+        and MEMCACHED_SERVER_COUNT > 0):
+    CACHES = {
+        'default': {
+                    'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+                    'LOCATION': [MEMCACHED_SERVER_SPEC.format(n)
+                                 for n in range(
+                                         MEMCACHED_SERVER_COUNT)]
+
+                }
+    }
+    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
