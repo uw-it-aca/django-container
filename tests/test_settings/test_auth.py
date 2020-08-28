@@ -114,12 +114,12 @@ class MultipleAuthTest(TestCase):
 
     def test_invalid_auth_list(self):
         mock_env = {
-            'AUTH': 'SAML SAML_MOCK',
+            'AUTH': 'SAML_MOCK SAML',
         }
 
+        # Ensure that only the first occurence of a SAML type was configured
         with SettingLoader('project.base_settings', **mock_env) as base_settings:
             self.assertIn('uw_saml', base_settings.INSTALLED_APPS)
-
-            # uw_saml app must not appear in INSTALLED_APPS more then once
-            self.assertEqual(len(set(base_settings.INSTALLED_APPS)),
-                             len(base_settings.INSTALLED_APPS))
+            self.assertIsNotNone(base_settings.MOCK_SAML_ATTRIBUTES)
+            self.assertDictEqual(base_settings.DEFAULT_SAML_ATTRIBUTES, base_settings.MOCK_SAML_ATTRIBUTES)
+            self.assertFalse(hasattr(base_settings, 'UW_SAML'))
