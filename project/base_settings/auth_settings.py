@@ -93,10 +93,17 @@ if _auth:
     MIDDLEWARE.insert(0, 'blti.middleware.SessionHeaderMiddleware')
     MIDDLEWARE.insert(0, 'blti.middleware.CSRFHeaderMiddleware')
 
-    # BLTI consumer key:secret pairs in env as a serialized dict
-    LTI_CONSUMERS = json.loads(os.getenv('LTI_CONSUMERS', '{}'))
     LTI_ENFORCE_SSL = parse_bool_from_str(os.getenv('LTI_ENFORCE_SSL', 'False'))
 
-    # BLTI session object encryption values
-    BLTI_AES_KEY = bytes(os.getenv('BLTI_AES_KEY', ''), encoding='utf8')
-    BLTI_AES_IV = bytes(os.getenv('BLTI_AES_IV', ''), encoding='utf8')
+    if _auth == 'BLTI_DEV' and os.getenv('ENV', 'localdev') == 'localdev':
+        LTI_DEVELOP_APP = os.getenv('LTI_DEVELOP_APP', '')
+        LTI_CONSUMERS = {'0000-0000-0000': '01234567ABCDEF'}
+        BLTI_AES_KEY = bytes('AE91AE1DF0E6FB44', encoding='utf8')
+        BLTI_AES_IV = bytes('01C8837249AE8667', encoding='utf8')
+    else:
+        # BLTI consumer key:secret pairs in env as a serialized dict
+        LTI_CONSUMERS = json.loads(os.getenv('LTI_CONSUMERS', '{}'))
+
+        # BLTI session object encryption values
+        BLTI_AES_KEY = bytes(os.getenv('BLTI_AES_KEY', ''), encoding='utf8')
+        BLTI_AES_IV = bytes(os.getenv('BLTI_AES_IV', ''), encoding='utf8')
