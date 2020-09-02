@@ -90,8 +90,15 @@ _auth = auth_from_env('BLTI')
 if _auth:
     INSTALLED_APPS.append('blti')
 
+    MIDDLEWARE.remove('django.middleware.clickjacking.XFrameOptionsMiddleware')
     MIDDLEWARE.insert(0, 'blti.middleware.SessionHeaderMiddleware')
     MIDDLEWARE.insert(0, 'blti.middleware.CSRFHeaderMiddleware')
+    MIDDLEWARE.insert(0, 'blti.middleware.SameSiteMiddleware')
+
+    # relax samesite (django-blti>=2.2.1),
+    # but protect cookies from casual snooping
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
 
     LTI_ENFORCE_SSL = parse_bool_from_str(os.getenv('LTI_ENFORCE_SSL', 'False'))
 
