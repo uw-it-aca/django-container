@@ -95,7 +95,8 @@ if _auth:
     MIDDLEWARE.insert(0, 'blti.middleware.CSRFHeaderMiddleware')
     MIDDLEWARE.insert(0, 'blti.middleware.SameSiteMiddleware')
 
-    # relax samesite, but protect cookies from casual snooping
+    # relax samesite (django-blti>=2.2.1),
+    # but protect cookies from casual snooping
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
