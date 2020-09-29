@@ -90,7 +90,11 @@ _auth = auth_from_env('BLTI')
 if _auth:
     INSTALLED_APPS.append('blti')
 
-    MIDDLEWARE.remove('django.middleware.clickjacking.XFrameOptionsMiddleware')
+    try:
+        MIDDLEWARE.remove('django.middleware.clickjacking.XFrameOptionsMiddleware')
+    except Exception as ex:
+        pass
+
     MIDDLEWARE.insert(0, 'blti.middleware.SessionHeaderMiddleware')
     MIDDLEWARE.insert(0, 'blti.middleware.CSRFHeaderMiddleware')
     MIDDLEWARE.insert(0, 'blti.middleware.SameSiteMiddleware')
