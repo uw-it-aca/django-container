@@ -147,7 +147,7 @@ class TestMemcached(TestCase):
         memcached = {
             'MEMCACHED_SERVER_COUNT': '1',
             'MEMCACHED_SERVER_SPEC': 'mock_memcached_{}:11211',
-            'MEMCACHED_USE_POOLING': True,
+            'MEMCACHED_USE_POOLING': 'true',
             'MEMCACHED_MAX_POOL_SIZE': '9',
             'SESSION_BACKEND': 'MEMCACHED',
         }
