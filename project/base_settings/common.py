@@ -80,20 +80,29 @@ elif os.getenv('DB', 'sqlite3') == 'postgres':
         }
     }
 
+MEMCACHED_SERVERS = []
 MEMCACHED_SERVER_COUNT = int(os.getenv('MEMCACHED_SERVER_COUNT', 0))
-if (os.getenv('SESSION_BACKEND', '') == 'MEMCACHED'
-        and MEMCACHED_SERVER_COUNT > 0):
+if MEMCACHED_SERVER_COUNT > 0:
     MEMCACHED_SERVER_SPEC = os.getenv('MEMCACHED_SERVER_SPEC')
-    CACHES = {
-        'default': {
-                    'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-                    'LOCATION': [MEMCACHED_SERVER_SPEC.format(n)
-                                 for n in range(
-                                         MEMCACHED_SERVER_COUNT)]
+    MEMCACHED_SERVERS = [MEMCACHED_SERVER_SPEC.format(n) for n in range(MEMCACHED_SERVER_COUNT)]
+    MEMCACHED_USE_POOLING = os.getenv('MEMCACHED_USE_POOLING', True)
+    MEMCACHED_MAX_POOL_SIZE = int(os.getenv('MEMCACHED_MAX_POOL_SIZE', 5))
+    MEMCACHED_CONNECT_TIMEOUT = int(os.getenv('MEMCACHED_CONNECT_TIMEOUT', 2))
+    MEMCACHED_TIMEOUT = int(os.getenv('MEMCACHED_TIMEOUT', 2))
+    MEMCACHED_NOREPLY = os.getenv('MEMCACHED_NOREPLY', True)
 
+    if os.getenv('SESSION_BACKEND', '') == 'MEMCACHED':
+        CACHES = {
+            'default': {
+                'BACKEND': 'memcached_clients.django.PymemcacheCache',
+                'LOCATION': MEMCACHED_SERVERS,
+                'OPTIONS': {
+                    'use_pooling': MEMCACHED_USE_POOLING,
+                    'max_pool_size': MEMCACHED_MAX_POOL_SIZE,
                 }
-    }
-    SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+            }
+        }
+        SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

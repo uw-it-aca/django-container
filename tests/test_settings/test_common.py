@@ -131,6 +131,35 @@ class TestDatabases(TestCase):
         with SettingLoader('project.base_settings', DB='postgres', **database_env_values) as base_settings:
             self.assertDictEqual(base_settings.DATABASES, postgres_db)
 
+class TestMemcached(TestCase):
+    def test_servers(self):
+        memcached = {
+            'MEMCACHED_SERVER_COUNT': '2',
+            'MEMCACHED_SERVER_SPEC': 'mock_memcached_{}:11211'
+        }
+        with SettingLoader('project.base_settings', **memcached) as base_settings:
+            self.assertEqual(base_settings.MEMCACHED_SERVER_COUNT, 2)
+            self.assertListEqual(
+                base_settings.MEMCACHED_SERVERS,
+                ['mock_memcached_0:11211', 'mock_memcached_1:11211'])
+
+    def test_cache_backend(self):
+        memcached = {
+            'MEMCACHED_SERVER_COUNT': '1',
+            'MEMCACHED_SERVER_SPEC': 'mock_memcached_{}:11211',
+            'MEMCACHED_USE_POOLING': True,
+            'MEMCACHED_MAX_POOL_SIZE': '9',
+            'SESSION_BACKEND': 'MEMCACHED',
+        }
+        with SettingLoader('project.base_settings', **memcached) as base_settings:
+            self.assertEqual(base_settings.CACHES['default']['LOCATION'],
+                             ['mock_memcached_0:11211'])
+            self.assertDictEqual(base_settings.CACHES['default']['OPTIONS'], {
+                'use_pooling': True, 'max_pool_size': 9})
+            self.assertEqual(base_settings.SESSION_ENGINE,
+                             'django.contrib.sessions.backends.cache')
+
+
 class TestStaticfilesFinders(TestCase):
     def test_requried_finders(self):
         with SettingLoader('project.base_settings') as base_settings:
