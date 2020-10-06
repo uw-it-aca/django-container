@@ -147,7 +147,7 @@ class TestMemcached(TestCase):
         memcached = {
             'MEMCACHED_SERVER_COUNT': '1',
             'MEMCACHED_SERVER_SPEC': 'mock_memcached_{}:11211',
-            'MEMCACHED_USE_POOLING': 'true',
+            'MEMCACHED_USE_POOLING': 'True',
             'MEMCACHED_MAX_POOL_SIZE': '9',
             'SESSION_BACKEND': 'MEMCACHED',
         }
@@ -155,7 +155,7 @@ class TestMemcached(TestCase):
             self.assertEqual(base_settings.CACHES['default']['LOCATION'],
                              ['mock_memcached_0:11211'])
             self.assertDictEqual(base_settings.CACHES['default']['OPTIONS'], {
-                'use_pooling': True, 'max_pool_size': 9})
+                'use_pooling': 'True', 'max_pool_size': 9})
             self.assertEqual(base_settings.SESSION_ENGINE,
                              'django.contrib.sessions.backends.cache')
 
