@@ -94,7 +94,7 @@ if MEMCACHED_SERVER_COUNT > 0:
     if os.getenv('SESSION_BACKEND', '') == 'MEMCACHED':
         CACHES = {
             'default': {
-                'BACKEND': 'memcached_clients.django.PymemcacheCache',
+                'BACKEND': 'memcached_clients.django_backend.PymemcacheCache',
                 'LOCATION': MEMCACHED_SERVERS,
                 'OPTIONS': {
                     'use_pooling': MEMCACHED_USE_POOLING,
