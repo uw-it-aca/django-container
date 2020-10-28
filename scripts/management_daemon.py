@@ -60,7 +60,7 @@ if not command:
     abort('missing command')
 
 # open metrics endpoint
-start_http_server(os.getenv('PORT', 8080))
+start_http_server(os.getenv('PORT', 9090))
 
 release_id = os.getenv('RELEASE_ID', None)
 if not release_id:
@@ -75,7 +75,7 @@ while True:
 
     finish = time.time()
     management_daemon_command_start.labels(
-        command, release_id)..set(start)
+        command, release_id).set(start)
     management_daemon_command_finish.labels(
         command, release_id).set(finish)
     management_daemon_command_duration.labels(
