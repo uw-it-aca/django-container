@@ -1,5 +1,6 @@
-#!/usr/bin/env python3
+#!/app/bin/python3
 
+import django
 from django.core import management
 from prometheus_client import start_http_server, Gauge
 import time
@@ -66,6 +67,10 @@ release_id = os.getenv('RELEASE_ID', None)
 if not release_id:
     m = re.match(r'(.+?)-daemon-.+$', os.getenv('HOSTNAME', ''))
     release_id = m.group(1) if m else 'default'
+
+# init django
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'project.settings')
+django.setup()
 
 # run provided management command in a loop
 while True:
