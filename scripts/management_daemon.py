@@ -13,7 +13,7 @@ management_daemon_command_start = Gauge(
     'management_daemon_command_start',
     'Management Command start time',
     ['job', 'instance'])
-management_daemon_command_start = Gauge(
+management_daemon_command_finish = Gauge(
     'management_daemon_command_finish',
     'Management Command finish time',
     ['job', 'instance'])
