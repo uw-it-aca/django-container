@@ -90,7 +90,7 @@ while True:
     finish = time.time()
 
     management_daemon_command_exit.labels(
-        command, release_id).set(rv if rv else 0)
+        command, release_id).set(rv if rv and isinstance(rv, int) else 0)
     management_daemon_command_start.labels(
         command, release_id).set(start)
     management_daemon_command_finish.labels(
