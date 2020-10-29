@@ -25,7 +25,7 @@ management_daemon_command_duration = Gauge(
 
 loop_delay = 15
 command = None
-options = None
+options = []
 our_arg = True
 
 
@@ -51,10 +51,8 @@ for arg in sys.argv[1:]:
     elif not command:
         command = arg
         our_arg = False
-    elif options:
-        options.append(arg)
     else:
-        options = [arg]
+        options.append(arg)
     
 
 if not command:
@@ -76,7 +74,7 @@ django.setup()
 while True:
     start = time.time()
 
-    management.call_command(command, options)
+    management.call_command(command, *options)
 
     finish = time.time()
     management_daemon_command_start.labels(
