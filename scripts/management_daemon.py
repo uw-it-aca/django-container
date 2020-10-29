@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 from django.core import management
-from prometheus_client import start_http_server, Guage
+from prometheus_client import start_http_server, Gauge
 import time
 import sys
 import os
