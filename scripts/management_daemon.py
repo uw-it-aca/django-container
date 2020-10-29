@@ -60,7 +60,7 @@ if not command:
     abort('missing command')
 
 # open metrics endpoint
-start_http_server(os.getenv('PORT', 8000))
+start_http_server(int(os.getenv('PORT', '8000')))
 
 release_id = os.getenv('RELEASE_ID', None)
 if not release_id:
