@@ -21,6 +21,10 @@ management_daemon_command_duration = Gauge(
     'management_daemon_command_duration',
     'Management Command curation',
     ['job', 'instance'])
+management_daemon_command_exit = Gauge(
+    'management_daemon_command_exit',
+    'Management Command return value',
+    ['job', 'instance'])
 
 
 loop_delay = 15
@@ -74,9 +78,19 @@ django.setup()
 while True:
     start = time.time()
 
-    management.call_command(command, *options)
+    rv = -1
+    try:
+        rv = management.call_command(command, *options)
+    except SystemExit as ex:
+        rv = int(str(ex))
+    except Exception as ex:
+        print("management_daemon {} exception: {}".format(command, ex),
+              file=sys.stderr)
 
     finish = time.time()
+
+    management_daemon_command_exit.labels(
+        command, release_id).set(rv if rv and isinstance(rv, int) else 0)
     management_daemon_command_start.labels(
         command, release_id).set(start)
     management_daemon_command_finish.labels(
