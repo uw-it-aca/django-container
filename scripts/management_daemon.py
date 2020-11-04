@@ -5,9 +5,37 @@ from django.core import management
 from prometheus_client import start_http_server, Gauge
 import time
 import sys
+import signal
 import os
 import re
 
+
+loop_delay = 15
+finished = False
+command = None
+options = []
+our_arg = True
+
+
+def abort(reason):
+    print("{}: {}".format(sys.argv[0].split('/')[-1], reason), file=sys.stderr)
+    sys.exit(1)
+
+
+def handler(signum, frame):
+    global finished
+
+    if signum == signal.SIGWINCH:
+        finished = True
+
+
+def finish_on_signal():
+    print("management command daemon {}: finished".format(command))
+    sys.exit(0)
+
+
+# prepare to exit gracefully
+signal.signal(signal.SIGWINCH, handler)
 
 management_daemon_command_start = Gauge(
     'management_daemon_command_start',
@@ -25,17 +53,6 @@ management_daemon_command_exit = Gauge(
     'management_daemon_command_exit',
     'Management Command return value',
     ['job', 'instance'])
-
-
-loop_delay = 15
-command = None
-options = []
-our_arg = True
-
-
-def abort(reason):
-    print("{}: {}".format(sys.argv[0].split('/')[-1], reason), file=sys.stderr)
-    sys.exit(1)
 
 
 # parse our args before the command's
@@ -62,8 +79,8 @@ for arg in sys.argv[1:]:
 if not command:
     abort('missing command')
 
-# open metrics endpoint
-start_http_server(int(os.getenv('PORT', '8000')))
+# open metrics exporter endpoint
+start_http_server(9100)
 
 release_id = os.getenv('RELEASE_ID', None)
 if not release_id:
@@ -77,6 +94,9 @@ django.setup()
 # run provided management command in a loop
 while True:
     start = time.time()
+
+    if finished is True:
+        finish_on_signal()
 
     rv = -1
     try:
