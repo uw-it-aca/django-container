@@ -117,6 +117,7 @@ def main():
             report("exception: {}".format(ex), error=True)
 
         finish = time.time()
+        duration = finish - start
 
         management_daemon_command_exit.labels(
             command, release_id).set(rv if rv and isinstance(rv, int) else 0)
@@ -125,10 +126,11 @@ def main():
         management_daemon_command_finish.labels(
             command, release_id).set(finish)
         management_daemon_command_duration.labels(
-            command, release_id).set(finish - start)
+            command, release_id).set(duration)
 
-        if not finish_signal:
-            time.sleep(loop_delay)
+        delay_delta = loop_delay - int(duration)
+        if delay_delta > 0 and not finish_signal:
+            time.sleep(delay_delta)
 
 
 if __name__ == '__main__':
