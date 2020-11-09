@@ -3,11 +3,14 @@
 import django
 from django.core import management
 from prometheus_client import start_http_server, Gauge
+from croniter import croniter
+from datetime import datetime
 import time
 import sys
 import signal
 import os
 import re
+
 
 #
 # Run django management command on a continuous loop
@@ -19,6 +22,7 @@ def main():
                signal.SIGTERM, signal.SIGWINCH]
     finish_signal = None
     loop_delay = 15
+    cron_spec = None
     command = None
     options = []
     our_arg = True
@@ -43,6 +47,17 @@ def main():
             finish_signal = signum
         else:
             report("signal {}".format(signum), error=True)
+
+    def pause(lastrun_utc):
+        delay = 0
+        if cron_spec:
+            c = croniter(cron_spec, datetime.utcfromtimestamp(lastrun_utc + 1))
+            delay = int(c.get_next() - lastrun_utc)
+        else:
+            delay = loop_delay - int(time.time() - lastrun_utc)
+
+        if delay > 0 and not finish_signal:
+            time.sleep(delay)
 
     # prepare to exit gracefully
     for signum in signals:
@@ -70,11 +85,19 @@ def main():
     for arg in sys.argv[1:]:
         if our_arg:
             if not loop_delay:
-                if not re.match('^[1-9][0-9]*$', arg):
+                if not re.match('^[0-9]+$', arg):
                     abort('invalid loop delay')
+
                 loop_delay = int(arg)
+            elif cron_spec is not None and len(cron_spec) == 0:
+                if not croniter.is_valid(arg):
+                    abort("invalid cron specification")
+
+                cron_spec = arg
             elif arg == '--delay':
                 loop_delay = None
+            elif arg == '--cron':
+                cron_spec = ""
             elif arg == '--':
                 our_arg = False
             else:
@@ -88,6 +111,16 @@ def main():
 
     if command is None:
         abort('missing command')
+
+    if not loop_delay:
+        abort('missing delay')
+
+    if cron_spec:
+        if len(cron_spec) == 0:
+            abort('missing cron specification')
+
+        # initial pause
+        pause(time.time())
 
     # open metrics exporter endpoint
     start_http_server(9100)
@@ -128,9 +161,7 @@ def main():
         management_daemon_command_duration.labels(
             command, release_id).set(duration)
 
-        delay_delta = loop_delay - int(duration)
-        if delay_delta > 0 and not finish_signal:
-            time.sleep(delay_delta)
+        pause(start)
 
 
 if __name__ == '__main__':
