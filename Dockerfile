@@ -45,11 +45,20 @@ ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
+RUN mkdir /media
+RUN mkdir /var/run
+RUN groupadd -r acait -g 1000 && \
+    useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait &&\
+    chown -R acait:acait /app &&\
+    chown -R acait:acait /static &&\
+    chown -R acait:acait /media &&\
+    chown -R acait:acait /home/acait &&\
+    chown -R acait:acait /var/run &&\
+    chmod -R +x /scripts
 
 ADD conf/gunicorn.service /etc/systemd/gunicorn.service
 ADD conf/gunicorn.socket /etc/systemd/gunicorn.socket
 ADD conf/nginx.conf /etc/nginx/nginx.conf
-
 
 ADD conf/apache2.conf /tmp/apache2.conf
 ADD conf/envvars /tmp/envvars
@@ -65,18 +74,9 @@ RUN rm -rf /etc/apache2/sites-available/ && \
     cp /tmp/envvars /etc/apache2/envvars &&\
     mkdir /etc/apache2/logs
 
-
 RUN mkdir /var/lock/apache2 && mkdir /var/run/apache2
-RUN groupadd -r acait -g 1000 && \
-    useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait &&\
-    chown -R acait:acait /app &&\
-    chown -R acait:acait /static &&\
-    chown -R acait:acait /home/acait &&\
-    chown -R acait:acait /var/lock/apache2 &&\
+RUN chown -R acait:acait /var/lock/apache2 &&\
     chown -R acait:acait /var/run/apache2
-
-RUN chmod -R +x /scripts
-
 
 USER acait
 
