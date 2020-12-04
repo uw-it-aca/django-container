@@ -3,6 +3,7 @@ WORKDIR /app/
 ENV PYTHONUNBUFFERED 1
 RUN apt-get -y update && \
     apt-get -y install apache2 apache2-dev && \
+    apt-get -y install python-gunicorn nginx && \
     apt-get upgrade -y && \
     apt-get dist-upgrade -y && \
     apt-get clean all
@@ -44,6 +45,10 @@ ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
+
+ADD conf/gunicorn.service /etc/systemd/gunicorn.service
+ADD conf/gunicorn.socket /etc/systemd/gunicorn.socket
+ADD conf/nginx.conf /etc/nginx/nginx.conf
 
 
 ADD conf/apache2.conf /tmp/apache2.conf

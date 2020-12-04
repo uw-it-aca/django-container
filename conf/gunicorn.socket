@@ -1,0 +1,10 @@
+[Unit]
+Description=gunicorn socket
+
+[Socket]
+ListenStream=/run/gunicorn.sock
+User=acait
+#Mode=600
+
+[Install]
+WantedBy=sockets.target

@@ -1,0 +1,19 @@
+[Unit]
+Description=gunicorn daemon
+Requires=gunicorn.socket
+After=network.target
+
+[Service]
+Type=notify
+User=acait
+Group=acait
+RuntimeDirectory=gunicorn
+WorkingDirectory=/home/acait/
+ExecStart=/usr/bin/gunicorn project.wsgi.application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

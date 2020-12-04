@@ -38,7 +38,17 @@ else
   # Prepare for readinessProbe
   touch /tmp/ready
 
-  # Start Apache server in foreground
-  exec /usr/sbin/apachectl -DFOREGROUND
+  if [ "$WS" = "nginx" ]
+  then
 
+    systemctl enable --now gunicorn.socket
+    # Start nginx in foreground
+    exec /usr/sbin/nginx -g 'daemon off;'
+
+  else
+
+    # Start Apache server in foreground
+    exec /usr/sbin/apachectl -DFOREGROUND
+
+  fi
 fi
