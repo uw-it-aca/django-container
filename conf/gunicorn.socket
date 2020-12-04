@@ -2,7 +2,7 @@
 Description=gunicorn socket
 
 [Socket]
-ListenStream=/var/run/gunicorn.sock
+ListenStream=/var/run/gunicorn/gunicorn.sock
 User=acait
 #Mode=600
 

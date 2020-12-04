@@ -9,7 +9,7 @@ RUN apt-get -y update && \
     apt-get clean all
 
 # Install system dependencies
-RUN apt-get  update -y&& \
+RUN apt-get  update -y && \
     apt-get install -y \
     dumb-init \
     git \
@@ -45,20 +45,20 @@ ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
-RUN mkdir /media
-RUN mkdir /var/run
 RUN groupadd -r acait -g 1000 && \
     useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait &&\
     chown -R acait:acait /app &&\
     chown -R acait:acait /static &&\
-    chown -R acait:acait /media &&\
     chown -R acait:acait /home/acait &&\
-    chown -R acait:acait /var/run &&\
     chmod -R +x /scripts
 
 ADD conf/gunicorn.service /etc/systemd/gunicorn.service
 ADD conf/gunicorn.socket /etc/systemd/gunicorn.socket
 ADD conf/nginx.conf /etc/nginx/nginx.conf
+
+RUN mkdir /var/run/gunicorn && mkdir /var/run/nginx
+RUN chown -R acait:acait /var/run/gunicorn &&\
+    chown -R acait:acait /var/run/nginx
 
 ADD conf/apache2.conf /tmp/apache2.conf
 ADD conf/envvars /tmp/envvars
