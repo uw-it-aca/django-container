@@ -1,4 +1,4 @@
-#!/app/bin/python3
+#!/usr/bin/env python
 
 import django
 from django.core import management
