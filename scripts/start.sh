@@ -38,7 +38,7 @@ else
   # Prepare for readinessProbe
   touch /tmp/ready
 
-  if [ "$WS" = "nginx" ]
+  if [ "$WEBSERVER" = "nginx" ]
   then
 
     systemctl enable --now gunicorn.socket
