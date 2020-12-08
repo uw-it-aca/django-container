@@ -60,7 +60,7 @@ ADD conf/nginx.conf /etc/nginx/nginx.conf
 
 RUN mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
     mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
-    mkdir /var/lib/nginx && chown -R acait:acait /var/lib/nginx && \
+    chown -R acait:acait /var/lib/nginx && \
     chown -R acait:acait /var/log/nginx
 
 # Set up apache2
