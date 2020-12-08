@@ -3,7 +3,6 @@ WORKDIR /app/
 ENV PYTHONUNBUFFERED 1
 RUN apt-get -y update && \
     apt-get -y install apache2 apache2-dev && \
-    apt-get -y install gunicorn nginx && \
     apt-get upgrade -y && \
     apt-get dist-upgrade -y && \
     apt-get clean all
@@ -18,7 +17,6 @@ RUN apt-get  update -y && \
     openssl \
     sqlite3 \
     sudo \
-    systemd \
     tar \
     curl \
     wget \
@@ -29,6 +27,7 @@ RUN apt-get  update -y && \
     python3-venv \
     libxml2-dev \
     libxmlsec1-dev \
+    gunicorn \
     python-pip
 
 RUN locale-gen en_US.UTF-8
@@ -53,15 +52,8 @@ RUN groupadd -r acait -g 1000 && \
     chown -R acait:acait /home/acait &&\
     chmod -R +x /scripts
 
-# Set up nginx/gunicorn
-ADD conf/gunicorn.service /etc/systemd/gunicorn.service
-ADD conf/gunicorn.socket /etc/systemd/gunicorn.socket
-ADD conf/nginx.conf /etc/nginx/nginx.conf
-
-RUN mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
-    mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
-    chown -R acait:acait /var/lib/nginx && \
-    chown -R acait:acait /var/log/nginx
+# Set up gunicorn
+ADD conf/gunicorn.py /etc/gunicorn/conf.py
 
 # Set up apache2
 ADD conf/apache2.conf /tmp/apache2.conf

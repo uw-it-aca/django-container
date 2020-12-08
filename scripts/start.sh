@@ -38,12 +38,10 @@ else
   # Prepare for readinessProbe
   touch /tmp/ready
 
-  if [ "$WEBSERVER" = "nginx" ]
+  if [ "$WEBSERVER" = "gunicorn" ]
   then
 
-    systemctl enable --now gunicorn.socket
-    # Start nginx in foreground
-    exec /usr/sbin/nginx -g 'daemon off;'
+    /usr/bin/gunicorn -b 127.0.0.1:$PORT -c /etc/gunicorn/conf.py project.wsgi.application
 
   else
 
