@@ -41,7 +41,7 @@ else
   if [ "$WEBSERVER" = "gunicorn" ]
   then
 
-    exec /app/bin/gunicorn -c "/etc/gunicorn/conf.py" project.wsgi:application
+    /app/bin/gunicorn -c "/etc/gunicorn/conf.py" project.wsgi:application &
     exec /usr/sbin/nginx -g 'daemon off;'
 
   else
