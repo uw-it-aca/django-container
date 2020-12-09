@@ -41,6 +41,7 @@ RUN python3 -m venv /app/
 RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi
 RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
 RUN . /app/bin/activate && \
+    pip install supervisor && \
     pip install gunicorn && \
     pip install django-prometheus && \
     pip install croniter
@@ -56,10 +57,12 @@ RUN groupadd -r acait -g 1000 && \
     chmod -R +x /scripts
 
 # Set up gunicorn
+ADD conf/supervisord.conf /etc/supervisor/supervisord.conf
 ADD conf/gunicorn.py /etc/gunicorn/conf.py
 ADD conf/nginx.conf /etc/nginx/nginx.conf
 
-RUN mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
+RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
+    mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
     mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
     chown -R acait:acait /var/lib/nginx && \
     chown -R acait:acait /var/log/nginx
