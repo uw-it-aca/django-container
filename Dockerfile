@@ -21,6 +21,7 @@ RUN apt-get  update -y && \
     curl \
     wget \
     netcat \
+    nginx \
     python-setuptools \
     build-essential\
     python3.6-dev \
@@ -56,6 +57,12 @@ RUN groupadd -r acait -g 1000 && \
 
 # Set up gunicorn
 ADD conf/gunicorn.py /etc/gunicorn/conf.py
+ADD conf/nginx.conf /etc/nginx/nginx.conf
+
+RUN mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
+    mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
+    chown -R acait:acait /var/lib/nginx && \
+    chown -R acait:acait /var/log/nginx
 
 # Set up apache2
 ADD conf/apache2.conf /tmp/apache2.conf

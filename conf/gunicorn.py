@@ -18,7 +18,7 @@
 #       range.
 #
 
-#bind = '127.0.0.1:8080'
+bind = 'unix:/var/run/gunicorn/gunicorn.sock'
 backlog = 2048
 
 #
