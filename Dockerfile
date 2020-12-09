@@ -27,7 +27,6 @@ RUN apt-get  update -y && \
     python3-venv \
     libxml2-dev \
     libxmlsec1-dev \
-    gunicorn3 \
     python-pip
 
 RUN locale-gen en_US.UTF-8
@@ -40,7 +39,10 @@ ENV LANG en_US.UTF-8
 RUN python3 -m venv /app/
 RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi
 RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
-RUN . /app/bin/activate && pip install django-prometheus && pip install croniter
+RUN . /app/bin/activate && \
+    pip install gunicorn && \
+    pip install django-prometheus && \
+    pip install croniter
 ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
