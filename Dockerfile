@@ -27,7 +27,7 @@ RUN apt-get  update -y && \
     python3-venv \
     libxml2-dev \
     libxmlsec1-dev \
-    gunicorn \
+    gunicorn3 \
     python-pip
 
 RUN locale-gen en_US.UTF-8

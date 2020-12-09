@@ -65,9 +65,11 @@ backlog = 2048
 #       A positive integer. Generally set in the 1-5 seconds range.
 #
 
-workers = 1
-worker_class = 'sync'
+workers = 2
+threads = 4
+worker_class = 'gthread'
 worker_connections = 1000
+worker_tmp_dir = '/dev/shm'
 timeout = 30
 keepalive = 2
 
