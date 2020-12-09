@@ -41,7 +41,7 @@ else
   if [ "$WEBSERVER" = "gunicorn" ]
   then
 
-    supervisorctl start gunicorn &
+    /app/bin/supervisorctl start gunicorn &
     exec /usr/sbin/nginx -g 'daemon off;'
 
   else
