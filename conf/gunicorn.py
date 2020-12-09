@@ -130,6 +130,7 @@ pidfile = None
 umask = 0
 user = 'acait'
 group = 'acait'
+chdir = '/app'
 tmp_upload_dir = None
 
 #
