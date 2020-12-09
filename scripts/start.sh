@@ -41,7 +41,7 @@ else
   if [ "$WEBSERVER" = "gunicorn" ]
   then
 
-    /usr/bin/gunicorn -b 127.0.0.1:$PORT -c /etc/gunicorn/conf.py project.wsgi.application
+    exec /usr/bin/gunicorn3 -b "0.0.0.0:$PORT" -c "/etc/gunicorn/conf.py" project.wsgi.application
 
   else
 
