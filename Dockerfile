@@ -56,7 +56,7 @@ RUN groupadd -r acait -g 1000 && \
     chown -R acait:acait /home/acait &&\
     chmod -R +x /scripts
 
-# Set up gunicorn
+# Set up gunicorn/nginx
 ADD conf/supervisord.conf /etc/supervisor/supervisord.conf
 ADD conf/gunicorn.py /etc/gunicorn/conf.py
 ADD conf/nginx.conf /etc/nginx/nginx.conf
