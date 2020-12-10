@@ -60,6 +60,7 @@ RUN groupadd -r acait -g 1000 && \
 ADD conf/supervisord.conf /etc/supervisor/supervisord.conf
 ADD conf/gunicorn.py /etc/gunicorn/conf.py
 ADD conf/nginx.conf /etc/nginx/nginx.conf
+ADD conf/locations.conf /etc/nginx/includes/locations.conf
 
 RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
     mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
