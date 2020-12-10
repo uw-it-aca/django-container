@@ -8,7 +8,7 @@ RUN apt-get -y update && \
     apt-get clean all
 
 # Install system dependencies
-RUN apt-get  update -y&& \
+RUN apt-get  update -y && \
     apt-get install -y \
     dumb-init \
     git \
@@ -21,6 +21,7 @@ RUN apt-get  update -y&& \
     curl \
     wget \
     netcat \
+    nginx \
     python-setuptools \
     build-essential\
     python3.6-dev \
@@ -39,13 +40,35 @@ ENV LANG en_US.UTF-8
 RUN python3 -m venv /app/
 RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi
 RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
-RUN . /app/bin/activate && pip install django-prometheus && pip install croniter
+RUN . /app/bin/activate && \
+    pip install supervisor && \
+    pip install gunicorn && \
+    pip install django-prometheus && \
+    pip install croniter
 ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
+RUN groupadd -r acait -g 1000 && \
+    useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait &&\
+    chown -R acait:acait /app &&\
+    chown -R acait:acait /static &&\
+    chown -R acait:acait /home/acait &&\
+    chmod -R +x /scripts
 
+# Set up gunicorn/nginx
+ADD conf/supervisord.conf /etc/supervisor/supervisord.conf
+ADD conf/gunicorn.py /etc/gunicorn/conf.py
+ADD conf/nginx.conf /etc/nginx/nginx.conf
+ADD conf/locations.conf /etc/nginx/includes/locations.conf
 
+RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
+    mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
+    mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
+    chown -R acait:acait /var/lib/nginx && \
+    chown -R acait:acait /var/log/nginx
+
+# Set up apache2
 ADD conf/apache2.conf /tmp/apache2.conf
 ADD conf/envvars /tmp/envvars
 RUN rm -rf /etc/apache2/sites-available/ && \
@@ -60,18 +83,9 @@ RUN rm -rf /etc/apache2/sites-available/ && \
     cp /tmp/envvars /etc/apache2/envvars &&\
     mkdir /etc/apache2/logs
 
-
 RUN mkdir /var/lock/apache2 && mkdir /var/run/apache2
-RUN groupadd -r acait -g 1000 && \
-    useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait &&\
-    chown -R acait:acait /app &&\
-    chown -R acait:acait /static &&\
-    chown -R acait:acait /home/acait &&\
-    chown -R acait:acait /var/lock/apache2 &&\
+RUN chown -R acait:acait /var/lock/apache2 &&\
     chown -R acait:acait /var/run/apache2
-
-RUN chmod -R +x /scripts
-
 
 USER acait
 

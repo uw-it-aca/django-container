@@ -38,7 +38,17 @@ else
   # Prepare for readinessProbe
   touch /tmp/ready
 
-  # Start Apache server in foreground
-  exec /usr/sbin/apachectl -DFOREGROUND
+  if [ "$WEBSERVER" = "nginx" ]
+  then
 
+    # Start supervisord (gunicorn) and nginx
+    /app/bin/supervisord
+    exec /usr/sbin/nginx -g 'daemon off;'
+
+  else
+
+    # Start Apache server in foreground
+    exec /usr/sbin/apachectl -DFOREGROUND
+
+  fi
 fi
