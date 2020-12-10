@@ -38,10 +38,11 @@ else
   # Prepare for readinessProbe
   touch /tmp/ready
 
-  if [ "$WEBSERVER" = "gunicorn" ]
+  if [ "$WEBSERVER" = "nginx" ]
   then
 
-    /app/bin/supervisorctl start gunicorn &
+    # Start supervisord (gunicorn) and nginx
+    /app/bin/supervisord
     exec /usr/sbin/nginx -g 'daemon off;'
 
   else
