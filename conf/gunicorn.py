@@ -65,13 +65,17 @@ backlog = 2048
 #       A positive integer. Generally set in the 1-5 seconds range.
 #
 
-workers = 3
+from multiprocessing import cpu_count
+workers = (2 * cpu_count()) + 1
+#workers = 3
 threads = 4
 worker_class = 'gthread'
 worker_connections = 1000
+max_requests = 1000
+max_requests_jitter = 30
 worker_tmp_dir = '/dev/shm'
 timeout = 30
-keepalive = 2
+keepalive = 3
 
 #
 #   spew - Install a trace function that spews every line of Python
