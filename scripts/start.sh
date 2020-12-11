@@ -43,7 +43,7 @@ else
 
     # Start supervisord (gunicorn) and nginx
     /app/bin/supervisord
-    exec /usr/sbin/nginx -g 'daemon off;'
+    exec /usr/sbin/nginx
 
   else
 
