@@ -65,9 +65,7 @@ backlog = 2048
 #       A positive integer. Generally set in the 1-5 seconds range.
 #
 
-from multiprocessing import cpu_count
-workers = (2 * cpu_count()) + 1
-#workers = 3
+workers = 3
 threads = 4
 worker_class = 'gthread'
 worker_connections = 1000
