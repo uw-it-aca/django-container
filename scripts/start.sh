@@ -41,9 +41,8 @@ else
   if [ "$WEBSERVER" = "nginx" ]
   then
 
-    # Start supervisord (gunicorn) and nginx
-    /app/bin/supervisord
-    exec /usr/sbin/nginx
+    # Start supervisord (gunicorn and nginx)
+    exec /app/bin/supervisord
 
   else
 
