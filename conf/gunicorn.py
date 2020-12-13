@@ -34,9 +34,9 @@ chdir = '/app'
 # Logging
 
 errorlog = '-'
-accesslog = '-'
-loglevel = 'warn'
-access_log_format = '%(h)s %(l)s %(u)s %(t)s "%(r)s" %(s)s %(b)s "%(f)s" "%(a)s"'
+loglevel = 'info'
+capture_output = True
+accesslog = None
 
 # Server hooks
 
