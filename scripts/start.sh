@@ -42,10 +42,11 @@ else
   then
 
     # Set the port for nginx
-    sed  -i 's/${PORT}/'$PORT'/g' /etc/nginx/nginx.conf
+    sed 's/${PORT}/'$PORT'/g' /etc/nginx/nginx.conf > /tmp/nginx.tmp
+    cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
 
     # Start gunicorn and nginx
-    exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+    /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 
   else
 
