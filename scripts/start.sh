@@ -41,8 +41,11 @@ else
   if [ "$WEBSERVER" = "nginx" ]
   then
 
-    # Start supervisord (gunicorn and nginx)
-    exec /app/bin/supervisord
+    # Set the port for nginx
+    sed  -i 's/${PORT}/'$PORT'/g' /etc/nginx/nginx.conf
+
+    # Start gunicorn and nginx
+    exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 
   else
 
