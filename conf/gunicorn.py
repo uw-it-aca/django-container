@@ -8,8 +8,7 @@ backlog = 2048
 # Worker processes
 
 workers = 3
-threads = 4
-worker_class = 'gthread'
+worker_class = 'sync'
 max_requests = 1000
 max_requests_jitter = 30
 worker_tmp_dir = '/dev/shm'
