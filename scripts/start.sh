@@ -46,7 +46,7 @@ else
     cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
 
     # Start gunicorn and nginx
-    /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+    exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 
   else
 
