@@ -7,7 +7,7 @@ backlog = 2048
 
 # Worker processes
 
-workers = 3
+workers = 3  # This is set on the command line by supervisord
 worker_class = 'sync'
 max_requests = 1000
 max_requests_jitter = 30
