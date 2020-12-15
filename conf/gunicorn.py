@@ -7,8 +7,10 @@ backlog = 2048
 
 # Worker processes
 
+
 workers = 3  # This is set on the command line by supervisord
-worker_class = 'sync'
+threads = 4
+worker_class = 'gthread'
 max_requests = 1000
 max_requests_jitter = 30
 worker_tmp_dir = '/dev/shm'
