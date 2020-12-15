@@ -94,7 +94,7 @@ ENV PORT 8000
 ENV DB sqlite3
 ENV ENV localdev
 
-CMD ["dumb-init", "--rewrite", "15:28", "/scripts/start.sh"]
+CMD ["dumb-init", "--rewrite", "15:0", "/scripts/start.sh"]
 
 FROM django-container as django-test-container
 
