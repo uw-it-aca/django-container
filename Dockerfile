@@ -66,7 +66,8 @@ RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
     mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
     mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
     chown -R acait:acait /var/lib/nginx && \
-    chown -R acait:acait /var/log/nginx
+    chown -R acait:acait /var/log/nginx && \
+    chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
 
 # Set up apache2
 ADD conf/apache2.conf /tmp/apache2.conf
