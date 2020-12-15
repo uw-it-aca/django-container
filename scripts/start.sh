@@ -45,6 +45,12 @@ else
     sed 's/${PORT}/'$PORT'/g' /etc/nginx/nginx.conf > /tmp/nginx.tmp
     cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
 
+    # Set the number of gunicorn workers if it hasn't been set earlier
+    if [ -z "$GUNICORN_WORKERS" ]
+    then
+        export GUNICORN_WORKERS=$([ "$ENV" = "prod" ] && echo "2" || echo "1")
+    fi
+
     # Start gunicorn and nginx
     exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 
