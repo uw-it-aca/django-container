@@ -46,7 +46,10 @@ else
     cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
 
     # Set the number of gunicorn workers if it hasn't been set earlier
-    export GUNICORN_WORKERS="${GUNICORN_WORKERS:=2}"
+    if [ -z "$GUNICORN_WORKERS" ]
+    then
+        export GUNICORN_WORKERS=$([ "$ENV" = "prod" ] && echo "3" || echo "2")
+    fi
 
     # Start gunicorn and nginx
     exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
