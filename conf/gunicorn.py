@@ -7,7 +7,6 @@ backlog = 2048
 
 # Worker processes
 
-
 workers = 3  # This is set on the command line by supervisord
 threads = 4
 worker_class = 'gthread'
