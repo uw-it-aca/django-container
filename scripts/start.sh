@@ -48,7 +48,7 @@ else
     # Set the number of gunicorn workers if it hasn't been set earlier
     if [ -z "$GUNICORN_WORKERS" ]
     then
-        export GUNICORN_WORKERS=$([ "$ENV" = "prod" ] && echo "2" || echo "1")
+        export GUNICORN_WORKERS=$([ "$ENV" = "prod" ] && echo "3" || echo "2")
     fi
 
     # Start gunicorn and nginx
