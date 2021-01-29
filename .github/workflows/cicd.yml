@@ -3,10 +3,13 @@ name: Build, Test and Deploy
 
 on:
   push:
-    branches: [master, develop]
+    branches: '**'
   pull_request:
     branches: [master, develop]
     types: [opened, reopened, synchronize]
+  release:
+    branches: [main, master]
+    types: [published]
 
 jobs:
   build:
@@ -36,8 +39,23 @@ jobs:
         id: tags
         shell: bash
         run: |
-          export GITHUB_REF="${{ github.ref }}"
-          FIXED_BRANCH=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+          GITHUB_REF=${{ github.ref }}
+
+          case $GITHUB_REF in
+            refs/tags/*)
+              FIXED_BRANCH=${GITHUB_REF#refs/tags/}
+              ;;
+            refs/heads/*)
+              FIXED_BRANCH=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+              ;;
+            refs/pull/*)
+              FIXED_BRANCH=$(echo ${GITHUB_REF#refs/pull/} | tr / -)
+              ;;
+            *)
+              FIXED_BRANCH=$(echo ${GITHUB_REF} | tr / -)
+              ;;
+          esac
+
           echo "::set-output name=dc_tag::django-container:${FIXED_BRANCH}"
           echo "::set-output name=dtc_tag::django-test-container:${FIXED_BRANCH}"
 
@@ -72,14 +90,14 @@ jobs:
           load: true
 
       - name: Push Django Container to GCR
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || github.event_name == 'release'
         uses: uw-it-aca/actions/gcr-push@main
         with:
           image_tag: ${{ steps.tags.outputs.dc_tag }}
           gcp_json_key: ${{ secrets.GCP_JSON_KEY }}
 
       - name: Push Django Test Container to GCR
-        if: github.event_name == 'push'
+        if: github.event_name == 'push' || github.event_name == 'release'
         uses: uw-it-aca/actions/gcr-push@main
         with:
           image_tag: ${{ steps.tags.outputs.dtc_tag }}
