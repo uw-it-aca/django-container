@@ -7,6 +7,9 @@ on:
   pull_request:
     branches: [master, develop]
     types: [opened, reopened, synchronize]
+  release:
+    branches: [main, master]
+    types: [published]
 
 jobs:
   build:
@@ -37,7 +40,15 @@ jobs:
         shell: bash
         run: |
           export GITHUB_REF="${{ github.ref }}"
-          FIXED_BRANCH=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+
+          if [[ $GITHUB_REF =~ ^refs/tags/ ]]; then
+              FIXED_BRANCH=${GITHUB_REF#refs/tags/}
+          elif [[ $GITHUB_REF =~ ^refs/heads/ ]]; then
+              FIXED_BRANCH=$(echo ${GITHUB_REF#refs/heads/} | tr / -)
+          else
+              FIXED_BRANCH=${GITHUB_REF}
+          fi
+
           echo "::set-output name=dc_tag::django-container:${FIXED_BRANCH}"
           echo "::set-output name=dtc_tag::django-test-container:${FIXED_BRANCH}"
 
