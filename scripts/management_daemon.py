@@ -115,15 +115,15 @@ def main():
     if not loop_delay:
         abort('missing delay')
 
+    # open metrics exporter endpoint
+    start_http_server(9100)
+
     if cron_spec:
         if len(cron_spec) == 0:
             abort('missing cron specification')
 
         # initial pause
         pause(time.time())
-
-    # open metrics exporter endpoint
-    start_http_server(9100)
 
     release_id = os.getenv('RELEASE_ID', None)
     if not release_id:
