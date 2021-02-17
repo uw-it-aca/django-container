@@ -36,8 +36,14 @@ ENV LC_CTYPE en_US.UTF-8
 ENV LANG en_US.UTF-8
 
 RUN python3 -m venv /app/
-RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi
-RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
+RUN . /app/bin/activate && \
+    wget https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    pip3 install --upgrade pip
+RUN . /app/bin/activate && \
+    pip install django &&
+    django-admin.py startproject project . && \
+    pip uninstall django -y
 RUN . /app/bin/activate && \
     pip install supervisor && \
     pip install gunicorn && \
@@ -47,6 +53,7 @@ ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
+
 RUN groupadd -r acait -g 1000 && \
     useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait &&\
     chown -R acait:acait /app &&\
