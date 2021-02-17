@@ -1,14 +1,12 @@
 FROM ubuntu:18.04 as django-container
 WORKDIR /app/
 ENV PYTHONUNBUFFERED 1
-RUN apt-get -y update && \
-    apt-get -y install apache2 apache2-dev && \
-    apt-get upgrade -y && \
-    apt-get dist-upgrade -y && \
-    apt-get clean all
 
 # Install system dependencies
-RUN apt-get  update -y && \
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get dist-upgrade -y && \
+    apt-get clean all && \
     apt-get install -y \
     dumb-init \
     git \
@@ -38,8 +36,14 @@ ENV LC_CTYPE en_US.UTF-8
 ENV LANG en_US.UTF-8
 
 RUN python3 -m venv /app/
-RUN . /app/bin/activate && wget https://bootstrap.pypa.io/get-pip.py && python get-pip.py && pip3 install --upgrade pip && pip install mod_wsgi
-RUN . /app/bin/activate && pip install django && django-admin.py startproject project . && pip uninstall django -y
+RUN . /app/bin/activate && \
+    wget https://bootstrap.pypa.io/get-pip.py && \
+    python get-pip.py && \
+    pip3 install --upgrade pip
+RUN . /app/bin/activate && \
+    pip install django && \
+    django-admin.py startproject project . && \
+    pip uninstall django -y
 RUN . /app/bin/activate && \
     pip install supervisor && \
     pip install gunicorn && \
@@ -49,6 +53,7 @@ ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
+
 RUN groupadd -r acait -g 1000 && \
     useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait &&\
     chown -R acait:acait /app &&\
@@ -68,25 +73,6 @@ RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
     chown -R acait:acait /var/lib/nginx && \
     chown -R acait:acait /var/log/nginx && \
     chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
-
-# Set up apache2
-ADD conf/apache2.conf /tmp/apache2.conf
-ADD conf/envvars /tmp/envvars
-RUN rm -rf /etc/apache2/sites-available/ && \
-    mkdir /etc/apache2/sites-available/ && \
-    rm -rf /etc/apache2/sites-enabled/ && \
-    mkdir /etc/apache2/sites-enabled/ && \
-    rm -rf /etc/apache2/conf-enabled/ && \
-    mkdir /etc/apache2/conf-enabled/ && \
-    rm /etc/apache2/apache2.conf && \
-    cp /tmp/apache2.conf /etc/apache2/apache2.conf && \
-    rm /etc/apache2/envvars &&\
-    cp /tmp/envvars /etc/apache2/envvars &&\
-    mkdir /etc/apache2/logs
-
-RUN mkdir /var/lock/apache2 && mkdir /var/run/apache2
-RUN chown -R acait:acait /var/lock/apache2 &&\
-    chown -R acait:acait /var/run/apache2
 
 USER acait
 

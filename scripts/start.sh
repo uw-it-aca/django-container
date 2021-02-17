@@ -38,26 +38,17 @@ else
   # Prepare for readinessProbe
   touch /tmp/ready
 
-  if [ "$WEBSERVER" = "nginx" ]
+  # Set the port for nginx
+  sed 's/${PORT}/'$PORT'/g' /etc/nginx/nginx.conf > /tmp/nginx.tmp
+  cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
+
+  # Set the number of gunicorn workers if it hasn't been set earlier
+  if [ -z "$GUNICORN_WORKERS" ]
   then
-
-    # Set the port for nginx
-    sed 's/${PORT}/'$PORT'/g' /etc/nginx/nginx.conf > /tmp/nginx.tmp
-    cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
-
-    # Set the number of gunicorn workers if it hasn't been set earlier
-    if [ -z "$GUNICORN_WORKERS" ]
-    then
-        export GUNICORN_WORKERS=$([ "$ENV" = "prod" ] && echo "3" || echo "2")
-    fi
-
-    # Start gunicorn and nginx
-    exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
-
-  else
-
-    # Start Apache server in foreground
-    exec /usr/sbin/apachectl -DFOREGROUND
-
+    export GUNICORN_WORKERS=$([ "$ENV" = "prod" ] && echo "3" || echo "2")
   fi
+
+  # Start gunicorn and nginx
+  exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+
 fi
