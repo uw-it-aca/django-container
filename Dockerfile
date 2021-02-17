@@ -41,7 +41,7 @@ RUN . /app/bin/activate && \
     python get-pip.py && \
     pip3 install --upgrade pip
 RUN . /app/bin/activate && \
-    pip install django &&
+    pip install django && \
     django-admin.py startproject project . && \
     pip uninstall django -y
 RUN . /app/bin/activate && \
