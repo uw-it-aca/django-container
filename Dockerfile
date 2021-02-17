@@ -1,14 +1,12 @@
 FROM ubuntu:18.04 as django-container
 WORKDIR /app/
 ENV PYTHONUNBUFFERED 1
-RUN apt-get -y update && \
-    apt-get -y install apache2 apache2-dev && \
-    apt-get upgrade -y && \
-    apt-get dist-upgrade -y && \
-    apt-get clean all
 
 # Install system dependencies
-RUN apt-get  update -y && \
+RUN apt-get update -y && \
+    apt-get upgrade -y && \
+    apt-get dist-upgrade -y && \
+    apt-get clean all && \
     apt-get install -y \
     dumb-init \
     git \
@@ -68,25 +66,6 @@ RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
     chown -R acait:acait /var/lib/nginx && \
     chown -R acait:acait /var/log/nginx && \
     chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
-
-# Set up apache2
-ADD conf/apache2.conf /tmp/apache2.conf
-ADD conf/envvars /tmp/envvars
-RUN rm -rf /etc/apache2/sites-available/ && \
-    mkdir /etc/apache2/sites-available/ && \
-    rm -rf /etc/apache2/sites-enabled/ && \
-    mkdir /etc/apache2/sites-enabled/ && \
-    rm -rf /etc/apache2/conf-enabled/ && \
-    mkdir /etc/apache2/conf-enabled/ && \
-    rm /etc/apache2/apache2.conf && \
-    cp /tmp/apache2.conf /etc/apache2/apache2.conf && \
-    rm /etc/apache2/envvars &&\
-    cp /tmp/envvars /etc/apache2/envvars &&\
-    mkdir /etc/apache2/logs
-
-RUN mkdir /var/lock/apache2 && mkdir /var/run/apache2
-RUN chown -R acait:acait /var/lock/apache2 &&\
-    chown -R acait:acait /var/run/apache2
 
 USER acait
 
