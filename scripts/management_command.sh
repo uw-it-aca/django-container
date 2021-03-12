@@ -19,7 +19,7 @@ if [[ -v PUSHGATEWAY ]]; then
     LABELS="job=\"${JOB}\",instance=\"${RELEASE_ID}\""
     PUSHGATEWAY_PATH="metrics/job/${JOB}/instance/${RELEASE_ID}"
 
-    cat <<EOF | curl --data-binary @- "http://${PUSHGATEWAY}:9091/${PUSHGATEWAY_PATH}"
+    cat <<EOF | curl --silent --show-error --data-binary @- "http://${PUSHGATEWAY}:9091/${PUSHGATEWAY_PATH}"
 # HELP management_command_exit Management command exit code.
 # TYPE management_command_exit gauge
 management_command_exit{${LABELS}} $EXIT_STATUS
