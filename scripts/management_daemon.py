@@ -10,6 +10,7 @@ import sys
 import signal
 import os
 import re
+import gc
 
 
 #
@@ -57,6 +58,7 @@ def main():
             delay = loop_delay - int(time.time() - lastrun_utc)
 
         if delay > 0 and not finish_signal:
+            gc.collect()
             time.sleep(delay)
 
     # prepare to exit gracefully
