@@ -69,6 +69,19 @@ if os.getenv('ATTEST_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     else:
         RESTCLIENTS_ATTEST_HOST = 'https://api.sps-dev.sis.uw.edu:443'
 
+
+if os.getenv('ATTEST_AUTH_ENV') in RESTCLIENTS_DEFAULT_ENVS:
+    RESTCLIENTS_ATTEST_AUTH_DAO_CLASS = 'Live'
+    RESTCLIENTS_ATTEST_AUTH_CONNECT_TIMEOUT = os.getenv(
+        "ATTEST_AUTH_CONNECT_TIMEOUT", RESTCLIENTS_DEFAULT_CONNECT_TIMEOUT)
+    RESTCLIENTS_ATTEST_AUTH_TIMEOUT = os.getenv(
+        "ATTEST_AUTH_TIMEOUT", RESTCLIENTS_DEFAULT_TIMEOUT)
+    RESTCLIENTS_ATTEST_AUTH_POOL_SIZE = os.getenv("ATTEST_AUTH_POOL_SIZE", 2)
+    if os.getenv('ATTEST_AUTH_ENV') == 'PROD':
+        RESTCLIENTS_ATTEST_AUTH_HOST = 'https://sps-prod.auth.us-west-2.amazoncognito.com:443'
+    else:
+        RESTCLIENTS_ATTEST_AUTH_HOST = 'https://sps-dev.auth.us-west-2.amazoncognito.com:443'
+
 if os.getenv('KWS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_KWS_DAO_CLASS = 'Live'
     RESTCLIENTS_KWS_CONNECT_TIMEOUT = os.getenv(
