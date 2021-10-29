@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 set -e
 set -o noglob
 
