@@ -24,7 +24,7 @@ def main():
         if our_arg:
             if not loop_delay:
                 loop_delay = arg
-            elif not cron_spec:
+            elif cron_spec is not None and len(cron_spec) == 0:
                 cron_spec = arg
             elif arg == '--delay':
                 loop_delay = None

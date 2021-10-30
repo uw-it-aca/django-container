@@ -72,14 +72,15 @@ class CallCommand:
         return (cron_spec, None)
 
     def null_value(self, value):
-        return not (value and len(value) > 0)
+        return not (value is not None and (isinstance(value, int)
+                    or (isinstance(value, str) and len(value) > 0)))
 
     def abort(self, reason):
         logger.error(reason)
         sys.exit(-1)
 
     def finish_on_signal(self):
-        logger.info("exit on signal ({})".format(self.finish_signal))
+        logger.info("exit on signal ({})".format(self.signals.finish))
         sys.exit(0)
 
     def pause(self, lastrun_utc):
@@ -140,7 +141,7 @@ class Signals:
         for signum in self.signals:
             signal.signal(signum, self.handler)
 
-    def signal_handler(self, signum, frame):
+    def handler(self, signum, frame):
         if signum in self.signals:
             self._finish_signal = signum
         else:
@@ -164,7 +165,7 @@ class Metrics:
             self.release_id = m.group(1) if m else 'default'
 
         self.metrics = {}
-        for key, metrics in kwargs.get('metrics', []):
+        for key, metrics in kwargs.get('metrics', []).items():
             self.metrics[key] = Gauge(
                 metrics['name'], metrics['description'], ['job', 'instance'])
 
