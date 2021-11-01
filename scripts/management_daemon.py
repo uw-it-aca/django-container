@@ -9,8 +9,9 @@ import sys
 
 #
 # Run django management command on a continuous loop
-# delaying "--delay <seconds>" between each invocation,
-# and gracefully exiting on termination signal
+# periodically based on a "--delay <seconds>" or
+# "--cron '* * * * *'" specification, and gracefully
+# exit on termination signal
 #
 def main():
     loop_delay = 15

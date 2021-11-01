@@ -104,7 +104,7 @@ class CallCommand:
         while True:
             if self.signals.finish:
                 self.finish_on_signal()
-        
+
             start = time.time()
             rv = -1
             try:
@@ -114,10 +114,10 @@ class CallCommand:
             except Exception as ex:
                 rv = -1
                 logger.error("exception: {}".format(ex))
-        
+
             finish = time.time()
             duration = finish - start
-        
+
             self.metrics.collect([
                 ('start', start),
                 ('finish', finish),
