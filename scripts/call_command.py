@@ -61,7 +61,8 @@ class CallCommand:
         if self.null_value(cron_spec):
             if self.null_value(loop_delay):
                 self.abort('missing cron specification')
-            elif not re.match('^[0-9]+$', loop_delay):
+            elif (isinstance(loop_delay, str)
+                    and not re.match('^[0-9]+$', loop_delay)):
                 self.abort('non-integer loop delay')
 
             return (None, int(loop_delay))
