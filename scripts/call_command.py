@@ -3,7 +3,8 @@
 
 import django
 from django.core import management
-from prometheus_client import start_http_server, push_to_gateway, Gauge
+from prometheus_client import (
+    start_http_server, push_to_gateway, Gauge, REGISTRY)
 from croniter import croniter
 from datetime import datetime
 import logging
@@ -183,4 +184,5 @@ class Metrics:
     def flush(self):
         pushgateway = os.getenv('PUSHGATEWAY')
         if pushgateway:
-            push_to_gateway('{}:9091'.format(pushgateway), job=self.command)
+            push_to_gateway('{}:9091'.format(pushgateway),
+                            job=self.command, registry=REGISTRY)
