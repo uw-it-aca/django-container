@@ -119,11 +119,9 @@ class CallCommand:
             finish = time.time()
             duration = finish - start
 
-            self.metrics.collect([
-                ('start', start),
-                ('finish', finish),
-                ('duration', duration),
-                ('exit', rv if rv and isinstance(rv, int) else 0)])
+            self.metrics.collect(
+                start=start, finish=finish, duration=duration,
+                exit=(rv if rv and isinstance(rv, int) else 0))
 
             if self.is_daemon:
                 self.pause(start)
@@ -174,16 +172,21 @@ class Metrics:
         if kwargs.get('is_daemon', False):
             start_http_server(9100)
 
-    def collect(self, metrics):
-        for key, value in metrics:
+    def collect(self, **kwargs):
+        for key, value in kwargs.items():
             try:
                 self.metrics[
                     key].labels(self.command, self.release_id).set(value)
             except KeyError:
-                logger.error('unknown metric: {}'.format(key))
+                logger.error('Metrics: unknown metric: {}'.format(key))
 
     def flush(self):
         pushgateway = os.getenv('PUSHGATEWAY')
         if pushgateway:
-            push_to_gateway('{}:9091'.format(pushgateway),
-                            job=self.command, registry=REGISTRY)
+            try:
+                push_to_gateway('{}:9091'.format(pushgateway),
+                                job=self.command,
+                                grouping_key={'instance': self.release_id},
+                                registry=REGISTRY)
+            except Exception as ex:
+                logger.error("Metrics: push_to_gateway failure: {}".format(ex))
