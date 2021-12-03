@@ -6,6 +6,7 @@ class TestGlobals(TestCase):
         self.mock_env = {
             'CERT_PATH': 'test/path/to/cert',
             'KEY_PATH': 'test/path/to/key',
+            'CA_BUNDLE': 'test/path/to/ca-certs.crt',
             'CACHE_CLASS': 'test_cache_class',
         }
 
@@ -78,7 +79,7 @@ class TestRestClients(TestCase):
             with SettingLoader('project.base_settings.restclients_settings', **mock_env) as restclients_settings:
                 for attr in filter(lambda x: (x.startswith('RESTCLIENTS') or x.startswith('ASTRA')), dir(restclients_settings)):
                     restclients_attr[attr] = getattr(restclients_settings, attr)
-            
+
             with SettingLoader('project.base_settings', **mock_env) as base_settings:
                 for attr in filter(lambda x: (x.startswith('RESTCLIENTS') or x.startswith('ASTRA')), dir(base_settings)):
                     self.assertEqual(restclients_attr[attr], getattr(base_settings, attr))
