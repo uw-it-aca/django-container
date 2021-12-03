@@ -3,7 +3,7 @@ import os
 
 APPLICATION_CERT_PATH = os.getenv('CERT_PATH', '')
 APPLICATION_KEY_PATH = os.getenv('KEY_PATH', '')
-RESTCLIENTS_CA_BUNDLE = '/app/certs/ca-bundle.crt'
+RESTCLIENTS_CA_BUNDLE = os.getenv('CA_BUNDLE', '/etc/ssl/certs/ca-certificates.crt')
 RESTCLIENTS_DAO_CACHE_CLASS = os.getenv('CACHE_CLASS', '')
 RESTCLIENTS_DEFAULT_CONNECT_TIMEOUT = 3
 RESTCLIENTS_DEFAULT_TIMEOUT = 10

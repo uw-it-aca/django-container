@@ -74,6 +74,9 @@ RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
     chown -R acait:acait /var/log/nginx && \
     chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
 
+# Append the uwca to the ca-bundle
+RUN cat /app/certs/ca-uwca.crt >> /etc/ssl/certs/ca-certificates.crt
+
 USER acait
 
 ENV PORT 8000
