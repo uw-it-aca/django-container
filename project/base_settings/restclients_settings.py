@@ -116,7 +116,7 @@ if os.getenv('UWNETID_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_UWNETID_KEY_FILE = APPLICATION_KEY_PATH
     RESTCLIENTS_UWNETID_HOST = 'https://uwnetid.washington.edu'
     if os.getenv('UWNETID_ENV') == 'EVAL':
-        RESTCLIENTS_UWNETID_VERSION = 'v0-eval'
+        RESTCLIENTS_UWNETID_VERSION = 'v1-eval'
 
 if os.getenv('CANVAS_ENV') in ['PROD', 'EVAL', 'BETA']:
     RESTCLIENTS_CANVAS_DAO_CLASS = 'Live'
