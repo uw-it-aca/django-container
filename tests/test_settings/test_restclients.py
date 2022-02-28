@@ -54,7 +54,6 @@ class TestRestClients(TestCase):
             'GRADEPAGE_ENV',
             'BOOKSTORE_ENV',
             'GRAD_ENV',
-            'MYPLAN_ENV',
             'LIBCURRICS_ENV',
             'LIBRARIES_ENV',
             'CALENDAR_ENV',
