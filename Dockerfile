@@ -1,32 +1,34 @@
-FROM ubuntu:18.04 as django-container
+FROM ubuntu:20.04 as django-container
 WORKDIR /app/
 ENV PYTHONUNBUFFERED 1
+ENV TZ America/Los_Angeles
 
 # Install system dependencies
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y && \
     apt-get upgrade -y && \
     apt-get dist-upgrade -y && \
     apt-get clean all && \
     apt-get install -y \
+    build-essential \
+    curl \
     dumb-init \
     git \
     hostname \
-    locales \
-    openssl \
-    sqlite3 \
-    sudo \
-    tar \
-    curl \
-    wget \
-    netcat \
-    nginx \
-    python-setuptools \
-    build-essential\
-    python3.6-dev \
-    python3-venv \
     libxml2-dev \
     libxmlsec1-dev \
-    python-pip
+    locales \
+    netcat \
+    nginx \
+    openssl \
+    python-setuptools \
+    python3.8-dev \
+    python3-venv \
+    python3-pip \
+    sqlite3 \
+    sudo \
+    supervisor \
+    tar
 
 RUN locale-gen en_US.UTF-8
 # locale.getdefaultlocale() searches in this order
@@ -37,18 +39,10 @@ ENV LANG en_US.UTF-8
 
 RUN python3 -m venv /app/
 RUN . /app/bin/activate && \
-    wget https://bootstrap.pypa.io/get-pip.py && \
-    python get-pip.py && \
-    pip3 install --upgrade pip
-RUN . /app/bin/activate && \
-    pip install django && \
-    django-admin.py startproject project . && \
-    pip uninstall django -y
-RUN . /app/bin/activate && \
-    pip install supervisor && \
     pip install gunicorn && \
     pip install django-prometheus && \
     pip install croniter
+
 ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
@@ -89,7 +83,7 @@ FROM django-container as django-test-container
 
 # install test tooling
 USER root
-RUN apt-get install -y nodejs npm gcc-4.8 unixodbc-dev
+RUN apt-get install -y nodejs npm unixodbc-dev
 
 USER acait
 RUN . /app/bin/activate &&\
