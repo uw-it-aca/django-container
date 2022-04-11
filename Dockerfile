@@ -21,6 +21,7 @@ RUN apt-get update -y && \
     netcat \
     nginx \
     openssl \
+    pkg-config \
     python-setuptools \
     python3.8-dev \
     python3-venv \
@@ -38,7 +39,7 @@ ENV LC_CTYPE en_US.UTF-8
 ENV LANG en_US.UTF-8
 
 RUN python3 -m venv /app/
-RUN pip install gunicorn django-prometheus croniter
+RUN pip install gunicorn django-prometheus croniter wheel
 
 ADD project/ /app/project
 ADD scripts /scripts
