@@ -50,11 +50,9 @@ jobs:
           nose2
 
   build:
-      if: github.event_name == 'push'
+    needs: test
 
-      needs: test
-
-      runs-on: ubuntu-20.04
+    runs-on: ubuntu-20.04
 
     steps:
       - name: Checkout Repo
