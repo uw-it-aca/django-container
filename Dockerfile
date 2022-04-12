@@ -8,7 +8,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -y && \
   apt-get upgrade -y && \
   apt-get dist-upgrade -y && \
-  apt-get clean all && \
+  apt-get clean && \
   apt-get install -y \
   build-essential \
   curl \
@@ -39,9 +39,14 @@ ENV LC_CTYPE en_US.UTF-8
 ENV LANG en_US.UTF-8
 
 RUN python3 -m venv /app/
+
+RUN /app/bin/pip install django && \
+  /app/bin/django-admin startproject project . && \
+  /app/bin/pip uninstall django -y
+
 RUN /app/bin/pip install wheel gunicorn django-prometheus croniter
 
-ADD project/ /var/project
+ADD project/ /app/project
 ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
