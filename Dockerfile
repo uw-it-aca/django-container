@@ -41,7 +41,7 @@ ENV LANG en_US.UTF-8
 RUN python3 -m venv /app/
 RUN /app/bin/pip install wheel gunicorn django-prometheus croniter
 
-ADD project/ /app/_project
+ADD project/ /var/project
 ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
