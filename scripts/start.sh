@@ -49,6 +49,6 @@ else
   fi
 
   # Start gunicorn and nginx
-  exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+  exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 
 fi
