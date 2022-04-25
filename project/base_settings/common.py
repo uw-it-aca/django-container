@@ -79,6 +79,7 @@ elif os.getenv('DB', 'sqlite3') == 'postgres':
             'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
         }
     }
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 MEMCACHED_SERVERS = []
 MEMCACHED_SERVER_COUNT = int(os.getenv('MEMCACHED_SERVER_COUNT', 0))
