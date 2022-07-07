@@ -50,7 +50,6 @@ class TestRestClients(TestCase):
             'UWNETID_ENV',
             'CANVAS_ENV',
             'CODA_ENV',
-            'CATALYST_ENV',
             'GRADEPAGE_ENV',
             'BOOKSTORE_ENV',
             'GRAD_ENV',
