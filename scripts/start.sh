@@ -42,10 +42,15 @@ else
   sed 's/${PORT}/'$PORT'/g' /etc/nginx/nginx.conf > /tmp/nginx.tmp
   cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
 
-  # Set the number of gunicorn workers if it hasn't been set earlier
+  # Set the number of workers and threads for gunicorn if it hasn't been set
   if [ -z "$GUNICORN_WORKERS" ]
   then
     export GUNICORN_WORKERS=$([ "$ENV" = "prod" ] && echo "3" || echo "2")
+  fi
+
+  if [ -z "$GUNICORN_THREADS" ]
+  then
+    export GUNICORN_THREADS=$([ "$ENV" = "prod" ] && echo "3" || echo "2")
   fi
 
   # Start gunicorn and nginx
