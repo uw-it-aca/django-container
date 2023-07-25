@@ -108,3 +108,13 @@ RUN . /app/bin/activate && pip install pycodestyle coverage nodeenv && \
   tslib
 
 ENV NODE_PATH=/app/lib/node_modules
+
+# Approach.1 Get "Unable to locate package google-cloud-sdk"
+# RUN apt-get update && apt-get install -y google-cloud-sdk
+
+# Approach.2: Add Google Cloud SDK package repository to the system
+RUN curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/google-cloud-sdk.tar.gz \
+    && tar zxvf google-cloud-sdk.tar.gz -C /usr/local/ \
+    && /usr/local/google-cloud-sdk/install.sh
+# Add Google Cloud SDK to the PATH
+ENV PATH $PATH:/usr/local/google-cloud-sdk/bin
