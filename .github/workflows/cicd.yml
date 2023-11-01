@@ -20,14 +20,14 @@ jobs:
         django-version:
           - '2.2'
           - '3.2'
-          - '4.0'
+          - '4.2'
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
@@ -56,10 +56,10 @@ jobs:
 
     steps:
       - name: Checkout Repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: 3.8
 
@@ -88,10 +88,10 @@ jobs:
           echo "::set-output name=dtc_tag::django-test-container:${FIXED_BRANCH}"
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v1
+        uses: docker/setup-buildx-action@v2
 
       - name: Cache Docker layers
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: /tmp/.buildx-cache
           key: >-
@@ -101,7 +101,7 @@ jobs:
             ${{ runner.os }}-buildx-
 
       - name: Build Django Container Image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           target: django-container
           tags: ${{ steps.tags.outputs.dc_tag }}
@@ -111,7 +111,7 @@ jobs:
           cache-to: type=local,dest=/tmp/.buildx-cache
 
       - name: Build Django Container Test Image
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           tags: ${{ steps.tags.outputs.dtc_tag }}
           push: false

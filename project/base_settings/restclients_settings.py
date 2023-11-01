@@ -459,3 +459,18 @@ if MEMCACHED_SERVER_COUNT > 0:
     RESTCLIENTS_MEMCACHED_SERVERS = tuple(MEMCACHED_SERVER_SPEC.format(n)
                                           for n in range(
                                                   MEMCACHED_SERVER_COUNT))
+
+if os.getenv('EMAIL_HOST'):
+    EMAIL_HOST = os.getenv('EMAIL_HOST')
+    EMAIL_PORT = os.getenv('EMAIL_PORT', 587)
+    EMAIL_TIMEOUT = os.getenv('EMAIL_TIMEOUT', 15)
+    EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', True)
+    EMAIL_SSL_CERTFILE = APPLICATION_CERT_PATH
+    EMAIL_SSL_KEYFILE = APPLICATION_KEY_PATH
+
+    if os.getenv('ENV', 'localdev') == 'prod':
+        EMAIL_BACKEND = 'project.mail.backends.EmailBackend'
+    else:
+        if os.getenv('SAFE_EMAIL_RECIPIENT'):
+            EMAIL_BACKEND = 'saferecipient.EmailBackend'
+            SAFE_EMAIL_RECIPIENT = os.getenv('SAFE_EMAIL_RECIPIENT')
