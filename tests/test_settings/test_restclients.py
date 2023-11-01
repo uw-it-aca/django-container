@@ -1,6 +1,7 @@
 from unittest import TestCase
 from ..utils import SettingLoader
 
+
 class TestGlobals(TestCase):
     def setUp(self):
         self.mock_env = {
@@ -30,6 +31,7 @@ class TestGlobals(TestCase):
             self.assertEqual(RESTCLIENTS_DEFAULT_POOL_SIZE, base_settings.RESTCLIENTS_DEFAULT_POOL_SIZE)
             self.assertEqual(RESTCLIENTS_DEFAULT_ENVS, base_settings.RESTCLIENTS_DEFAULT_ENVS)
 
+
 class TestCache(TestCase):
     def test_memcached(self):
         mock_memcached = {
@@ -38,6 +40,17 @@ class TestCache(TestCase):
         }
         with SettingLoader('project.base_settings', **mock_memcached) as base_settings:
             self.assertSequenceEqual(('mock_memcached_0:11211',), base_settings.RESTCLIENTS_MEMCACHED_SERVERS)
+
+
+class TestEmail(TestCase):
+    def test_email(self):
+        mock_email = {
+            'EMAIL_HOST': 'test.edu',
+            'ENV': 'prod',
+        }
+        with SettingLoader('project.base_settings', **mock_email) as base_settings:
+            self.assertEqual(base_settings.EMAIL_BACKEND, 'project.mail.backends.EmailBackend')
+
 
 class TestRestClients(TestCase):
     def test_settings_not_overwritten(self):
