@@ -14,7 +14,7 @@ class SettingLoader:
 
         self.loaded_setting = importlib.import_module(self.setting_file_path)
         return self.loaded_setting
-    
+
     def __exit__(self, exc_type, exc_value, tb):
         for variable_name in self.enviroment_variables:
             del os.environ[variable_name]
