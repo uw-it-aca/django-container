@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as django-container
+FROM ubuntu:22.04 as django-container
 WORKDIR /app/
 ENV PYTHONUNBUFFERED 1
 ENV TZ America/Los_Angeles
@@ -23,7 +23,7 @@ RUN apt-get update -y && \
   openssl \
   pkg-config \
   python-setuptools \
-  python3.8-dev \
+  python3.10-dev \
   python3-venv \
   python3-pip \
   sqlite3 \

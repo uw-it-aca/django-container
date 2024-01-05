@@ -26,6 +26,12 @@ class TestSecretKey(TestCase):
         with SettingLoader('project.base_settings', ENV='notlocaldev') as base_settings:
             self.assertIsNone(base_settings.SECRET_KEY)
 
+class TestAllowedHosts(TestCase):
+    def test_allowed_hosts(self):
+        with SettingLoader('project.base_settings', ENV='notlocaldev', CLUSTER_CNAME='test.edu', HOSTNAME='1.2.3.4') as base_settings:
+            self.assertEqual(base_settings.ALLOWED_HOSTS, ['test.edu', '1.2.3.4', '1.2.3.4'])
+            self.assertEqual(base_settings.CSRF_TRUSTED_ORIGINS, ['https://test.edu'])
+
 class TestInstalledApps(TestCase):
     def test_contains_required_apps(self):
         with SettingLoader('project.base_settings') as base_settings:
