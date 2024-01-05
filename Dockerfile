@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as django-container
+FROM ubuntu:22.04 as django-container
 WORKDIR /app/
 ENV PYTHONUNBUFFERED 1
 ENV TZ America/Los_Angeles
