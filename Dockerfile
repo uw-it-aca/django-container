@@ -23,7 +23,7 @@ RUN apt-get update -y && \
   openssl \
   pkg-config \
   python-setuptools \
-  python3.8-dev \
+  python3.10-dev \
   python3-venv \
   python3-pip \
   sqlite3 \
