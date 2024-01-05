@@ -12,6 +12,8 @@ if all([os.getenv('CLUSTER_CNAME'), os.getenv('HOSTNAME')]):
         os.getenv('HOSTNAME'),                          # Internal hostname
         socket.gethostbyname(os.getenv('HOSTNAME')),    # IP
     ]
+    # Apps that support multiple external hostnames will need to extend this list
+    CSRF_TRUSTED_ORIGINS = ['https://' + os.getenv('CLUSTER_CNAME')]
 
 if os.getenv('ENV', 'localdev') == 'localdev':
     SECRET_KEY = os.getenv('DJANGO_SECRET', get_random_secret_key())
