@@ -44,7 +44,7 @@ RUN /app/bin/pip install django && \
   /app/bin/django-admin startproject project . && \
   /app/bin/pip uninstall django -y
 
-RUN /app/bin/pip install wheel gunicorn django-prometheus croniter
+RUN /app/bin/pip install wheel gunicorn django-prometheus croniter tzdata
 
 ADD project/ /app/project
 ADD scripts /scripts
