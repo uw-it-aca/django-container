@@ -114,7 +114,7 @@ class CallCommand:
                 rv = int(str(ex))
             except Exception as ex:
                 rv = -1
-                logger.error("exception: {}".format(ex))
+                logger.error("exception: {}".format(ex), exc_info=True)
 
             finish = time.time()
             duration = finish - start
