@@ -114,7 +114,9 @@ class CallCommand:
                 rv = int(str(ex))
             except Exception as ex:
                 rv = -1
-                logger.error("exception: {}".format(ex), exc_info=True)
+                logger.error("{} exception: {}".format(
+                    "daemon" if self.is_daemon else "cron", ex),
+                             exc_info=True)
 
             finish = time.time()
             duration = finish - start
@@ -124,6 +126,10 @@ class CallCommand:
                 exit=(rv if rv and isinstance(rv, int) else 0))
 
             if self.is_daemon:
+                if rv < 0:
+                    self.metrics.flush()
+                    break
+
                 self.pause(start)
             else:
                 self.metrics.flush()
