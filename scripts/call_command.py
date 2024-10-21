@@ -121,12 +121,13 @@ class CallCommand:
             finish = time.time()
             duration = finish - start
 
+            exit_value = rv if rv and isinstance(rv, int) else 0
             self.metrics.collect(
                 start=start, finish=finish, duration=duration,
-                exit=(rv if rv and isinstance(rv, int) else 0))
+                exit=exit_value)
 
             if self.is_daemon:
-                if rv < 0:
+                if exit_value < 0:
                     self.metrics.flush()
                     break
 
