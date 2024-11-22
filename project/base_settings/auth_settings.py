@@ -101,6 +101,7 @@ if _auth:
 
     # relax samesite (django-blti>=2.2.1),
     # but protect cookies from casual snooping
+    SESSION_COOKIE_SAMESITE = 'None'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
@@ -111,6 +112,8 @@ if _auth:
         LTI_CONSUMERS = {'0000-0000-0000': '01234567ABCDEF'}
         BLTI_AES_KEY = bytes('AE91AE1DF0E6FB44', encoding='utf8')
         BLTI_AES_IV = bytes('01C8837249AE8667', encoding='utf8')
+        MIDDLEWARE.remove('blti.middleware.SameSiteMiddleware')
+        CSRF_COOKIE_SECURE = False
     else:
         # BLTI consumer key:secret pairs in env as a serialized dict
         LTI_CONSUMERS = json.loads(os.getenv('LTI_CONSUMERS', '{}'))
