@@ -6,6 +6,8 @@ import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_SCHEME', 'https')
+
 if all([os.getenv('CLUSTER_CNAME'), os.getenv('HOSTNAME')]):
     ALLOWED_HOSTS = [
         os.getenv('CLUSTER_CNAME'),                     # External hostname
