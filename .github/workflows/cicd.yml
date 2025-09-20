@@ -18,12 +18,12 @@ jobs:
     strategy:
       matrix:
         python-version:
-          - '3.12'
-          - '3.11'
           - '3.10'
+          - '3.11'
+          - '3.12'
         django-version:
-          - '5.2'
           - '4.2'
+          - '5.2'
 
     steps:
       - name: Checkout Repo
@@ -62,10 +62,10 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v4
 
-      - name: Setup Python ${{ matrix.python-version }}
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
+          python-version: '3.12'
 
       - name: Set up tags
         id: tags
