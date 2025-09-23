@@ -1,7 +1,7 @@
-FROM ubuntu:22.04 as django-container
+FROM ubuntu:22.04 AS django-container
 WORKDIR /app/
-ENV PYTHONUNBUFFERED 1
-ENV TZ America/Los_Angeles
+ENV PYTHONUNBUFFERED=1
+ENV TZ=America/Los_Angeles
 
 # Install system dependencies
 ARG DEBIAN_FRONTEND=noninteractive
@@ -33,10 +33,10 @@ RUN apt-get update -y && \
 
 RUN locale-gen en_US.UTF-8
 # locale.getdefaultlocale() searches in this order
-ENV LANGUAGE en_US.UTF-8
-ENV LC_ALL en_US.UTF-8
-ENV LC_CTYPE en_US.UTF-8
-ENV LANG en_US.UTF-8
+ENV LANGUAGE=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+ENV LC_CTYPE=en_US.UTF-8
+ENV LANG=en_US.UTF-8
 
 RUN python3 -m venv /app/
 
@@ -76,13 +76,13 @@ RUN cat /app/certs/ca-uwca.crt >> /etc/ssl/certs/ca-certificates.crt
 
 USER acait
 
-ENV PORT 8000
-ENV DB sqlite3
-ENV ENV localdev
+ENV PORT=8000
+ENV DB=sqlite3
+ENV ENV=localdev
 
 CMD ["dumb-init", "--rewrite", "15:0", "/scripts/start.sh"]
 
-FROM django-container as django-test-container
+FROM django-container AS django-test-container
 
 # install test tooling
 USER root
