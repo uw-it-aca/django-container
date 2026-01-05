@@ -1,6 +1,3 @@
-# Copyright 2024 UW-IT, University of Washington
-# SPDX-License-Identifier: Apache-2.0
-
 from django.core.mail.backends.smtp import EmailBackend as SMTPBackend
 from django.utils.functional import cached_property
 import ssl
