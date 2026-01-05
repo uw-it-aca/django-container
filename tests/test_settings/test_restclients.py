@@ -70,6 +70,7 @@ class TestRestClients(TestCase):
             'MYPLAN_AUTH_ENV',
             'SPS_CONTACTS_ENV',
             'SPS_CONTACTS_AUTH_ENV',
+            'SPACE_ENV',
             'LIBCURRICS_ENV',
             'LIBRARIES_ENV',
             'CALENDAR_ENV',
