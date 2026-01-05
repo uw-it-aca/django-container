@@ -86,7 +86,8 @@ FROM django-container AS django-test-container
 
 # install test tooling
 USER root
-RUN apt-get install -y nodejs npm unixodbc-dev
+RUN apt-get update && \
+    apt-get install -y nodejs npm unixodbc-dev
 
 USER acait
 RUN . /app/bin/activate && pip install pycodestyle coverage nodeenv && \
