@@ -18,12 +18,11 @@ RUN apt-get update -y && \
   libxml2-dev \
   libxmlsec1-dev \
   locales \
-  netcat \
+  netcat-openbsd \
   nginx \
   openssl \
   pkg-config \
-  python-setuptools \
-  python3.10-dev \
+  python3.12-dev \
   python3-venv \
   python3-pip \
   sqlite3 \
@@ -51,12 +50,16 @@ ADD scripts /scripts
 ADD certs/ /app/certs
 RUN mkdir /static
 
-RUN groupadd -r acait -g 1000 && \
-  useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait && \
+RUN groupadd -r acait -g 1001 && \
+  useradd -u 1001 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait && \
   chown -R acait:acait /app && \
   chown -R acait:acait /static && \
   chown -R acait:acait /home/acait && \
   chmod -R +x /scripts
+
+# disable default user
+RUN usermod --lock ubuntu
+RUN usermod --shell /usr/sbin/nologin ubuntu
 
 # Set up gunicorn/nginx
 ADD conf/supervisord.conf /etc/supervisor/supervisord.conf
