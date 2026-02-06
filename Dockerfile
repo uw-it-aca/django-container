@@ -28,8 +28,8 @@ RUN apt-get update -y && \
   sqlite3 \
   sudo \
   supervisor \
-  tar
-RUN rm -rf /var/lib/apt/lists
+  tar && \
+  rm -rf /var/lib/apt/lists
 
 RUN locale-gen en_US.UTF-8
 # locale.getdefaultlocale() searches in this order
@@ -90,8 +90,8 @@ FROM django-container AS django-test-container
 # install test tooling
 USER root
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y nodejs npm unixodbc-dev
-RUN rm -rf /var/lib/apt/lists
+    apt-get install --no-install-recommends -y nodejs npm unixodbc-dev && \
+    rm -rf /var/lib/apt/lists
 
 USER acait
 RUN . /app/bin/activate && pip install --no-cache-dir \
