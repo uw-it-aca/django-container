@@ -9,7 +9,7 @@ RUN apt-get update -y && \
   apt-get upgrade -y && \
   apt-get dist-upgrade -y && \
   apt-get clean && \
-  apt-get install -y \
+  apt-get install --no-install-recommends -y \
   build-essential \
   curl \
   dumb-init \
@@ -29,6 +29,7 @@ RUN apt-get update -y && \
   sudo \
   supervisor \
   tar
+RUN rm -rf /var/lib/apt/lists
 
 RUN locale-gen en_US.UTF-8
 # locale.getdefaultlocale() searches in this order
@@ -45,9 +46,9 @@ RUN /app/bin/pip install django && \
 
 RUN /app/bin/pip install wheel gunicorn django-prometheus croniter tzdata
 
-ADD project/ /app/project
-ADD scripts /scripts
-ADD certs/ /app/certs
+COPY project/ /app/project
+COPY scripts /scripts
+COPY certs/ /app/certs
 RUN mkdir /static
 
 RUN groupadd -r acait -g 1001 && \
@@ -58,14 +59,13 @@ RUN groupadd -r acait -g 1001 && \
   chmod -R +x /scripts
 
 # disable default user
-RUN usermod --lock ubuntu
-RUN usermod --shell /usr/sbin/nologin ubuntu
+RUN usermod --lock ubuntu && usermod --shell /usr/sbin/nologin ubuntu
 
 # Set up gunicorn/nginx
-ADD conf/supervisord.conf /etc/supervisor/supervisord.conf
-ADD conf/gunicorn.py /etc/gunicorn/conf.py
-ADD conf/nginx.conf /etc/nginx/nginx.conf
-ADD conf/locations.conf /etc/nginx/includes/locations.conf
+COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
+COPY conf/gunicorn.py /etc/gunicorn/conf.py
+COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY conf/locations.conf /etc/nginx/includes/locations.conf
 
 RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
   mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
@@ -90,10 +90,14 @@ FROM django-container AS django-test-container
 # install test tooling
 USER root
 RUN apt-get update && \
-    apt-get install -y nodejs npm unixodbc-dev
+    apt-get install --no-install-recommends -y nodejs npm unixodbc-dev
+RUN rm -rf /var/lib/apt/lists
 
 USER acait
-RUN . /app/bin/activate && pip install pycodestyle coverage nodeenv && \
+RUN . /app/bin/activate && pip install --no-cache-dir \
+  pycodestyle \
+  coverage \
+  nodeenv && \
   nodeenv -p && \
   npm install npm@latest && \
   npm install -g \
