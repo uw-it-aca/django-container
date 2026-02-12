@@ -54,9 +54,7 @@ RUN mkdir /static
 # Override default ubuntu user with acait
 RUN usermod -l acait -d /home/acait -m ubuntu && \
   groupmod -n acait ubuntu && \
-  chown -R acait:acait /app && \
-  chown -R acait:acait /static && \
-  chown -R acait:acait /home/acait && \
+  chown -R acait:acait /app /static /home/acait && \
   chmod -R +x /scripts
 
 # Set up gunicorn/nginx
@@ -68,8 +66,7 @@ COPY conf/locations.conf /etc/nginx/includes/locations.conf
 RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
   mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
   mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
-  chown -R acait:acait /var/lib/nginx && \
-  chown -R acait:acait /var/log/nginx && \
+  chown -R acait:acait /var/lib/nginx /var/log/nginx && \
   chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
 
 # Append the uwca to the ca-bundle
