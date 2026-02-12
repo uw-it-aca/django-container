@@ -51,15 +51,13 @@ COPY scripts /scripts
 COPY certs/ /app/certs
 RUN mkdir /static
 
-RUN groupadd -r acait -g 1001 && \
-  useradd -u 1001 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait && \
+# Override default ubuntu user with acait
+RUN usermod -l acait -d /home/acait -m ubuntu && \
+  groupmod -n acait ubuntu && \
   chown -R acait:acait /app && \
   chown -R acait:acait /static && \
   chown -R acait:acait /home/acait && \
   chmod -R +x /scripts
-
-# disable default user
-RUN usermod --lock ubuntu && usermod --shell /usr/sbin/nologin ubuntu
 
 # Set up gunicorn/nginx
 COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
