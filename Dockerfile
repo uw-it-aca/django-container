@@ -1,4 +1,4 @@
-FROM ubuntu:22.04 AS django-container
+FROM ubuntu:24.04 AS django-container
 WORKDIR /app/
 ENV PYTHONUNBUFFERED=1
 ENV TZ=America/Los_Angeles
@@ -9,7 +9,7 @@ RUN apt-get update -y && \
   apt-get upgrade -y && \
   apt-get dist-upgrade -y && \
   apt-get clean && \
-  apt-get install -y \
+  apt-get install --no-install-recommends -y \
   build-essential \
   curl \
   dumb-init \
@@ -18,18 +18,18 @@ RUN apt-get update -y && \
   libxml2-dev \
   libxmlsec1-dev \
   locales \
-  netcat \
+  netcat-openbsd \
   nginx \
   openssl \
   pkg-config \
-  python-setuptools \
-  python3.10-dev \
+  python3.12-dev \
   python3-venv \
   python3-pip \
   sqlite3 \
   sudo \
   supervisor \
-  tar
+  tar && \
+  rm -rf /var/lib/apt/lists
 
 RUN locale-gen en_US.UTF-8
 # locale.getdefaultlocale() searches in this order
@@ -46,29 +46,27 @@ RUN /app/bin/pip install django && \
 
 RUN /app/bin/pip install wheel gunicorn django-prometheus croniter tzdata
 
-ADD project/ /app/project
-ADD scripts /scripts
-ADD certs/ /app/certs
+COPY project/ /app/project
+COPY scripts /scripts
+COPY certs/ /app/certs
 RUN mkdir /static
 
-RUN groupadd -r acait -g 1000 && \
-  useradd -u 1000 -rm -g acait -d /home/acait -s /bin/bash -c "container user" acait && \
-  chown -R acait:acait /app && \
-  chown -R acait:acait /static && \
-  chown -R acait:acait /home/acait && \
+# Override default ubuntu user with acait
+RUN usermod -l acait -d /home/acait -m ubuntu && \
+  groupmod -n acait ubuntu && \
+  chown -R acait:acait /app /static /home/acait && \
   chmod -R +x /scripts
 
 # Set up gunicorn/nginx
-ADD conf/supervisord.conf /etc/supervisor/supervisord.conf
-ADD conf/gunicorn.py /etc/gunicorn/conf.py
-ADD conf/nginx.conf /etc/nginx/nginx.conf
-ADD conf/locations.conf /etc/nginx/includes/locations.conf
+COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
+COPY conf/gunicorn.py /etc/gunicorn/conf.py
+COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY conf/locations.conf /etc/nginx/includes/locations.conf
 
 RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
   mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
   mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
-  chown -R acait:acait /var/lib/nginx && \
-  chown -R acait:acait /var/log/nginx && \
+  chown -R acait:acait /var/lib/nginx /var/log/nginx && \
   chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
 
 # Append the uwca to the ca-bundle
@@ -87,10 +85,14 @@ FROM django-container AS django-test-container
 # install test tooling
 USER root
 RUN apt-get update && \
-    apt-get install -y nodejs npm unixodbc-dev
+    apt-get install --no-install-recommends -y nodejs npm unixodbc-dev && \
+    rm -rf /var/lib/apt/lists
 
 USER acait
-RUN . /app/bin/activate && pip install pycodestyle coverage nodeenv && \
+RUN . /app/bin/activate && pip install --no-cache-dir \
+  pycodestyle \
+  coverage \
+  nodeenv && \
   nodeenv -p && \
   npm install npm@latest && \
   npm install -g \
