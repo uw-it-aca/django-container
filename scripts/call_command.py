@@ -3,7 +3,7 @@ from django.core import management
 from prometheus_client import (
     start_http_server, push_to_gateway, Gauge, REGISTRY)
 from croniter import croniter
-from datetime import datetime
+from datetime import datetime, timezone
 import logging
 import signal
 import time
@@ -11,6 +11,9 @@ import sys
 import os
 import gc
 import re
+
+# Add /app to Python path so we can import the project module
+sys.path.insert(0, '/app')
 
 
 logger = logging.getLogger(__name__)
@@ -86,7 +89,8 @@ class CallCommand:
         delay = 0
         if self.cron_spec:
             c = croniter(
-                self.cron_spec, datetime.utcfromtimestamp(lastrun_utc + 1))
+                self.cron_spec, datetime.fromtimestamp(lastrun_utc + 1,
+                                                       tz=timezone.utc))
             delay = int(c.get_next() - lastrun_utc)
         else:
             delay = self.loop_delay - int(time.time() - lastrun_utc)
