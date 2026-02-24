@@ -20,6 +20,7 @@ class TestGlobals(TestCase):
             RESTCLIENTS_DAO_CACHE_CLASS = restclients_settings.RESTCLIENTS_DAO_CACHE_CLASS
             RESTCLIENTS_DEFAULT_TIMEOUT = restclients_settings.RESTCLIENTS_DEFAULT_TIMEOUT
             RESTCLIENTS_DEFAULT_POOL_SIZE = restclients_settings.RESTCLIENTS_DEFAULT_POOL_SIZE
+            RESTCLIENTS_DEFAULT_THREAD_POOL_SIZE = restclients_settings.RESTCLIENTS_DEFAULT_THREAD_POOL_SIZE
             RESTCLIENTS_DEFAULT_ENVS = restclients_settings.RESTCLIENTS_DEFAULT_ENVS
 
         with SettingLoader('project.base_settings', **self.mock_env) as base_settings:
@@ -29,6 +30,7 @@ class TestGlobals(TestCase):
             self.assertEqual(RESTCLIENTS_DAO_CACHE_CLASS, base_settings.RESTCLIENTS_DAO_CACHE_CLASS)
             self.assertEqual(RESTCLIENTS_DEFAULT_TIMEOUT, base_settings.RESTCLIENTS_DEFAULT_TIMEOUT)
             self.assertEqual(RESTCLIENTS_DEFAULT_POOL_SIZE, base_settings.RESTCLIENTS_DEFAULT_POOL_SIZE)
+            self.assertEqual(RESTCLIENTS_DEFAULT_THREAD_POOL_SIZE, base_settings.RESTCLIENTS_DEFAULT_THREAD_POOL_SIZE)
             self.assertEqual(RESTCLIENTS_DEFAULT_ENVS, base_settings.RESTCLIENTS_DEFAULT_ENVS)
 
 
