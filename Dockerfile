@@ -100,7 +100,7 @@ RUN . /app/bin/activate && pip install --no-cache-dir \
   datejs \
   eslint \
   jquery \
-  jsdom@15.2.1 \
+  jsdom \
   jshint \
   mocha \
   moment \
