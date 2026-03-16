@@ -74,6 +74,7 @@ RUN cat /app/certs/ca-uwca.crt >> /etc/ssl/certs/ca-certificates.crt
 
 USER acait
 
+ENV PYTHONPATH="${PYTHONPATH}:/app/project"
 ENV PORT=8000
 ENV DB=sqlite3
 ENV ENV=localdev
