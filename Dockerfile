@@ -15,6 +15,7 @@ RUN apt-get update -y && \
   dumb-init \
   git \
   hostname \
+  libpq-dev \
   libxml2-dev \
   libxmlsec1-dev \
   locales \

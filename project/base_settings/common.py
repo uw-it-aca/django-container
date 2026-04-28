@@ -81,6 +81,12 @@ elif os.getenv('DB', 'sqlite3') == 'postgres':
             'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
             'USER': os.getenv('DATABASE_USERNAME', None),
             'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
+            'OPTIONS': {
+                'pool': {
+                    'min_size': os.getenv('DATABASE_POOL_MIN', 1),
+                    'max_size': os.getenv('DATABASE_POOL_MAX', 4),
+                },
+            },
         }
     }
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
