@@ -83,8 +83,8 @@ elif os.getenv('DB', 'sqlite3') == 'postgres':
             'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
             'OPTIONS': {
                 'pool': {
-                    'min_size': os.getenv('DATABASE_POOL_MIN', 1),
-                    'max_size': os.getenv('DATABASE_POOL_MAX', 4),
+                    'min_size': int(os.getenv('DATABASE_POOL_MIN', 1)),
+                    'max_size': int(os.getenv('DATABASE_POOL_MAX', 4)),
                 },
             },
         }
