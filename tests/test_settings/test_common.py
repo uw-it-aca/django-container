@@ -113,6 +113,7 @@ class TestDatabases(TestCase):
                 'NAME': 'db',
                 'USER': None,
                 'PASSWORD': None,
+                'OPTIONS': {'pool': {'max_size': 4, 'min_size': 1}},
             }
         }
         with SettingLoader('project.base_settings', DB='postgres') as base_settings:
@@ -124,6 +125,8 @@ class TestDatabases(TestCase):
             'DATABASE_DB_NAME': 'test_db',
             'DATABASE_USERNAME': 'test_username',
             'DATABASE_PASSWORD': 'test_password',
+            'DATABASE_POOL_MIN': '3',
+            'DATABASE_POOL_MAX': '9',
         }
         postgres_db = {
             'default': {
@@ -132,6 +135,7 @@ class TestDatabases(TestCase):
                 'NAME': database_env_values['DATABASE_DB_NAME'],
                 'USER': database_env_values['DATABASE_USERNAME'],
                 'PASSWORD': database_env_values['DATABASE_PASSWORD'],
+                'OPTIONS': {'pool': {'max_size': 9, 'min_size': 3}},
             }
         }
         with SettingLoader('project.base_settings', DB='postgres', **database_env_values) as base_settings:
