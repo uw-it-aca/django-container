@@ -86,7 +86,11 @@ FROM django-container AS django-test-container
 # install test tooling
 USER root
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y nodejs npm unixodbc-dev && \
+    apt-get install --no-install-recommends -y \
+    libpq-dev \
+    nodejs \
+    npm \
+    unixodbc-dev && \
     rm -rf /var/lib/apt/lists
 
 USER acait
