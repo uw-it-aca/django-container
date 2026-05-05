@@ -81,12 +81,15 @@ elif os.getenv('DB', 'sqlite3') == 'postgres':
             'NAME': os.getenv('DATABASE_DB_NAME', 'db'),
             'USER': os.getenv('DATABASE_USERNAME', None),
             'PASSWORD': os.getenv('DATABASE_PASSWORD', None),
-            'OPTIONS': {
-                'pool': {
-                    'min_size': int(os.getenv('DATABASE_POOL_MIN', 1)),
-                    'max_size': int(os.getenv('DATABASE_POOL_MAX', 4)),
-                },
-            },
+            # 'OPTIONS': {
+            #     'pool': {
+            #         'min_size': 4,         # Keeps connections warm
+            #         'max_size': 12,        # Handles traffic spikes
+            #         'timeout': 10,         # Fails fast under extreme load
+            #         'max_lifetime': 1800,  # 30 min maximum connection age
+            #         'max_idle': 300,       # Close idle connections at 5 min
+            #     },
+            # },
         }
     }
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
