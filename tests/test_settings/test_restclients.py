@@ -81,6 +81,7 @@ class TestRestClients(TestCase):
             'UWIDP_ENV',
             'ADSEL_ENV',
             'UPASS_ENV',
+            'IDCARD_ENV',
             'IASYSTEM_UW_ENV',
             'IASYSTEM_UWB_ENV',
             'IASYSTEM_UWT_ENV',
