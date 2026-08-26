@@ -39,7 +39,7 @@ if os.getenv('SWS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_SWS_CERT_FILE = APPLICATION_CERT_PATH
     RESTCLIENTS_SWS_KEY_FILE = APPLICATION_KEY_PATH
     if os.getenv('SWS_ENV') == 'PROD':
-        RESTCLIENTS_SWS_HOST = 'https://ws.admin.washington.edu:443'
+        RESTCLIENTS_SWS_HOST = 'https://ws.api.uw.edu:443'
     else:
         RESTCLIENTS_SWS_HOST = 'https://wseval.s.uw.edu:443'
 
@@ -54,7 +54,7 @@ if os.getenv('PWS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_PWS_CERT_FILE = APPLICATION_CERT_PATH
     RESTCLIENTS_PWS_KEY_FILE = APPLICATION_KEY_PATH
     if os.getenv('PWS_ENV') == 'PROD':
-        RESTCLIENTS_PWS_HOST = 'https://ws.admin.washington.edu:443'
+        RESTCLIENTS_PWS_HOST = 'https://ws.api.uw.edu:443'
     else:
         RESTCLIENTS_PWS_HOST = 'https://wseval.s.uw.edu:443'
 
@@ -69,7 +69,7 @@ if os.getenv('KWS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_KWS_CERT_FILE = APPLICATION_CERT_PATH
     RESTCLIENTS_KWS_KEY_FILE = APPLICATION_KEY_PATH
     if os.getenv('KWS_ENV') == 'PROD':
-        RESTCLIENTS_KWS_HOST = 'https://ws.admin.washington.edu:443'
+        RESTCLIENTS_KWS_HOST = 'https://ws.api.uw.edu:443'
     else:
         RESTCLIENTS_KWS_HOST = 'https://wseval.s.uw.edu:443'
 
@@ -84,7 +84,7 @@ if os.getenv('SPACE_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_SPACE_CERT_FILE = APPLICATION_CERT_PATH
     RESTCLIENTS_SPACE_KEY_FILE = APPLICATION_KEY_PATH
     if os.getenv('SPACE_ENV') == 'PROD':
-        RESTCLIENTS_SPACE_HOST = 'https://ws.admin.washington.edu:443'
+        RESTCLIENTS_SPACE_HOST = 'https://ws.api.uw.edu:443'
     else:
         RESTCLIENTS_SPACE_HOST = 'https://wseval.s.uw.edu:443'
 
@@ -99,7 +99,7 @@ if os.getenv('HRPWS_ENV') in RESTCLIENTS_DEFAULT_ENVS:
     RESTCLIENTS_HRPWS_CERT_FILE = APPLICATION_CERT_PATH
     RESTCLIENTS_HRPWS_KEY_FILE = APPLICATION_KEY_PATH
     if os.getenv('HRPWS_ENV') == 'PROD':
-        RESTCLIENTS_HRPWS_HOST = 'https://ws.admin.washington.edu:443'
+        RESTCLIENTS_HRPWS_HOST = 'https://ws.api.uw.edu:443'
     else:
         RESTCLIENTS_HRPWS_HOST = 'https://wseval.s.uw.edu:443'
 
