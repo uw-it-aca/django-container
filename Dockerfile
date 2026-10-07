@@ -46,6 +46,7 @@ RUN mkdir /rootfs && \
     dash_bins \
     coreutils_chmod \
     coreutils_chown \
+    coreutils_delaying \
     coreutils_rm-utility \
     coreutils_test \
     libpsl5t64_libs \
