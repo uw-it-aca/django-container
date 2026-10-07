@@ -1,0 +1,28 @@
+package: supervisor
+
+# Supervisor is written in Python, so its slice must map out 
+# dependencies to the core python3 execution blocks.
+package-dependencies:
+  - python3-minimal: [libs]
+  - python3-pkg-resources
+  - base-files: [base]
+
+slices:
+  # The binary and management utilities core block
+  bins:
+    essential:
+      - supervisor_copyright
+    paths:
+      # Main daemon engine executables
+      - /usr/bin/supervisord
+      - /usr/bin/supervisorctl
+      # Standard system configuration folder
+      - /etc/supervisor/
+      - /etc/supervisor/supervisord.conf
+      - /etc/supervisor/conf.d/
+
+  # Legally required copyright compliance documentation
+  copyright:
+    paths:
+      - /usr/share/doc/supervisor/copyright
+      - /usr/share/doc/supervisor/changelog.Debian.gz

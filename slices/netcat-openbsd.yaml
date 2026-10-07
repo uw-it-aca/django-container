@@ -1,0 +1,22 @@
+package: netcat-openbsd
+extra:
+  summary: TCP/IP swiss army knife (OpenBSD rewrite variant)
+
+slices:
+  # 1. License compliance mapping
+  copyright:
+    contents:
+      /usr/share/doc/netcat-openbsd/copyright: {}
+
+  # 2. Network execution utility binary and standard symlinks
+  bins:
+    essential:
+      - libc6_libs               # Native C dynamic linking dependency
+      - libbsd0_libs             # Dependency for OpenBSD-derived utilities (if required by release)
+      - netcat-openbsd_copyright
+    contents:
+      /bin/nc.openbsd: {}        # The core physical executable binary
+      /bin/nc:                   # Symlink providing a clean universal path alias
+        symlink: /bin/nc.openbsd
+      /bin/netcat:               # Alternate universal symlink path alias
+        symlink: /bin/nc.openbsd

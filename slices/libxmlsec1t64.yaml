@@ -1,0 +1,25 @@
+package: libxmlsec1t64
+
+# Hard dependencies required by the core XML Security library
+package-dependencies:
+  - libc6
+  - libxml2
+  - libxslt1.1
+
+slices:
+  # The foundational runtime slice targeting the core engine
+  libs:
+    essential:
+      - libxmlsec1t64_copyright
+    paths:
+      # Targets the primary runtime shared object engines
+      - /usr/lib/*/libxmlsec1.so.1
+      - /usr/lib/*/libxmlsec1.so.1.*
+      # Creates the empty directory context where backend modules load at runtime
+      - /usr/lib/*/xmlsec1-plugins/
+
+  # Legally required package license information 
+  copyright:
+    paths:
+      - /usr/share/doc/libxmlsec1t64/copyright
+      - /usr/share/doc/libxmlsec1t64/changelog.Debian.gz
