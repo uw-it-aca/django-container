@@ -1,7 +1,3 @@
-# syntax=docker/dockerfile:1
-# Multi-stage Dockerfile using Ubuntu Chisel for minimal image size
-# Based on existing Dockerfile but with chisel optimization
-
 ARG UBUNTU_RELEASE=24.04 CHISEL_VERSION=v1.5.0
 
 # Stage 1: Extract minimal Ubuntu/Python runtime with Chisel
@@ -38,37 +34,37 @@ RUN curl -S --location https://github.com/canonical/chisel/releases/download/${C
 
 # Use chisel cut to extract only essential packages needed for Python/Django runtime
 RUN mkdir /rootfs && \
-   chisel cut --release ./custom-release --root /rootfs \
-    base-files_base \
-    passwd_config \
-    ca-certificates_data \
-    bash_bins \
-    dash_bins \
-    coreutils_chmod \
-    coreutils_chown \
-    coreutils_delaying \
-    coreutils_rm-utility \
-    coreutils_test \
-    libpsl5t64_libs \
-    libssl3t64_libcrypto \
-    libssl3t64_libs \
-    openssl_config \
-    openssl_data \
-    python3.12-venv_ensurepip \
-    python3-minimal_bins \
-    libc6_libs \
-    libpq5_libs \
-    libxml2_libs \
-    libxmlsec1t64_libs \
-    libxmlsec1t64-openssl_libs \
-    git_bins \
-    git_http-support \
-    netcat-openbsd_bins \
-    dumb-init_bins \
-    supervisor_bins \
-    hostname_bins \
-    sqlite3_bins \
-    nginx_bins
+    chisel cut --release ./custom-release --root /rootfs \
+      base-files_base \
+      passwd_config \
+      ca-certificates_data \
+      bash_bins \
+      dash_bins \
+      coreutils_chmod \
+      coreutils_delaying \
+      coreutils_rm-utility \
+      coreutils_env \
+      coreutils_test \
+      libpsl5t64_libs \
+      libssl3t64_libcrypto \
+      libssl3t64_libs \
+      openssl_config \
+      openssl_data \
+      python3.12-venv_ensurepip \
+      python3-minimal_bins \
+      libc6_libs \
+      libpq5_libs \
+      libxml2_libs \
+      libxmlsec1t64_libs \
+      libxmlsec1t64-openssl_libs \
+      git_bins \
+      git_http-support \
+      dumb-init_bins \
+      supervisor_bins \
+      hostname_bins \
+      sqlite3_bins \
+      nginx_bins \
+      postgresql-client-16_bins
 
 # set locale on /rootfs
 RUN /usr/sbin/locale-gen en_US.UTF-8

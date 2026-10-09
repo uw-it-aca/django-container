@@ -12,7 +12,7 @@ if ! [[ -z "$MEMCACHED_SERVER_COUNT" ]]
 then
 
     MEMCACHED_SERVER=$(echo $MEMCACHED_SERVER_SPEC | sed 's/{}/0/g')
-    echo -e "stats\nquit" | netcat $MEMCACHED_SERVER 11211
+    python3 ./memcached_stats.py $MEMCACHED_SERVER
 
 fi
 

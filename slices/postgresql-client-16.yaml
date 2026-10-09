@@ -1,0 +1,24 @@
+package: postgresql-client-16
+
+package-dependencies:
+  - libc6: [libs]
+  - libpq5: [libs]
+
+slices:
+  # PostgreSQL 16 client binaries including pg_isready
+  bins:
+    summary: PostgreSQL 16 client binaries
+    essential:
+      - postgresql-client-16_copyright
+      - libc6_libs
+      - libpq5_libs
+    contents:
+      /usr/lib/postgresql/16/bin/pg_isready: {}
+      /usr/bin/pg_isready:
+        symlink: /usr/lib/postgresql/16/bin/pg_isready
+
+  # Legally required copyright documentation
+  copyright:
+    paths:
+      - /usr/share/doc/postgresql-client-16/copyright
+      - /usr/share/doc/postgresql-client-16/changelog.Debian.gz
