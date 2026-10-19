@@ -46,6 +46,7 @@ RUN mkdir /rootfs && \
       coreutils_env \
       coreutils_test \
       libpsl5t64_libs \
+      libatomic1_libs \
       libssl3t64_libcrypto \
       libssl3t64_libs \
       openssl_config \
@@ -190,7 +191,7 @@ ENV PATH="/app/bin:/usr/bin:\$PATH" \
 RUN chown -R acait:acait /app /scripts /home/acait
 
 USER acait
-RUN . /app/bin/activate && /app/bin/python -m pip install --no-cache-dir \
+RUN /app/bin/pip install --no-cache-dir \
   pycodestyle \
   coverage \
   nodeenv && \
