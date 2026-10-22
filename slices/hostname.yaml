@@ -1,24 +1,19 @@
 package: hostname
 
-# The hostname binary strictly links against the core GNU C Library
-package-dependencies:
-  - libc6
+essential:
+  - hostname_copyright
 
 slices:
-  # Contains the core 'hostname' executable and related symlinks
   bins:
     essential:
-      - hostname_copyright
-    paths:
-      - /bin/hostname
-      # Typical fallback symlinks pointing to the core utility
-      - /bin/dnsdomainname
-      - /bin/domainname
-      - /bin/nisdomainname
-      - /bin/ypdomainname
+      - libc6_libs
+    contents:
+      /usr/bin/hostname:
+      /usr/bin/dnsdomainname:
+      /usr/bin/domainname:
+      /usr/bin/nisdomainname:
+      /usr/bin/ypdomainname:
 
-  # Legally mandatory package copyright and tracking information
   copyright:
-    paths:
-      - /usr/share/doc/hostname/copyright
-      - /usr/share/doc/hostname/changelog.Debian.gz
+    contents:
+      /usr/share/doc/hostname/copyright:

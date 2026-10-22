@@ -1,20 +1,18 @@
 package: libxmlsec1t64-openssl
 
-# Updated to use the correct t64 package names for Ubuntu 24.04
-package-dependencies:
-  - libc6
-  - libssl3t64
-  - libxmlsec1t64: [libs]
+essential:
+  - libxmlsec1t64-openssl_copyright
 
 slices:
   libs:
     essential:
-      - libxmlsec1t64-openssl_copyright
-    paths:
-      - /usr/lib/*/xmlsec1-plugins/libxmlsec1-openssl.so
-      - /usr/lib/*/libxmlsec1-openssl.so.*
+      - libc6_libs
+      - libssl3t64_libcrypto
+      - libxml2_libs
+      - libxmlsec1t64_libs
+    contents:
+      /usr/lib/*-linux-*/libxmlsec1-openssl.so.1*:
 
   copyright:
-    paths:
-      # Note: The underlying doc folder usually retains the base name
-      - /usr/share/doc/libxmlsec1t64-openssl/copyright
+    contents:
+      /usr/share/doc/libxmlsec1t64-openssl/copyright:

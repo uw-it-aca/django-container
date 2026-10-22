@@ -8,7 +8,7 @@ source "/app/bin/activate"
 
 if [ "$DB" = "mysql" ] && [ "$ENV" = "dev" ]
 then
-  export DATABASE_NAME=`echo $BRANCH | sed 's/-/_/g' `
+  export DATABASE_NAME=${BRANCH//-/_}
   mysql -u $DATABASE_USERNAME -p$DATABASE_PASSWORD -h $DATABASE_HOSTNAME --execute="create database $DATABASE_NAME "
 fi
 
@@ -36,11 +36,11 @@ then
 else
 
   # Prepare for readinessProbe
-  touch /tmp/ready
+  : > /tmp/ready
 
   # Set the port for nginx
-  sed 's/${PORT}/'$PORT'/g' /etc/nginx/nginx.conf > /tmp/nginx.tmp
-  cat /tmp/nginx.tmp > /etc/nginx/nginx.conf
+  NGINX_CONF=$(</etc/nginx/nginx.conf)
+  printf '%s\n' "${NGINX_CONF//'${PORT}'/$PORT}" > /etc/nginx/nginx.conf
 
   # Set the number of gunicorn workers if it hasn't been set earlier
   if [ -z "$GUNICORN_WORKERS" ]
@@ -49,6 +49,6 @@ else
   fi
 
   # Start gunicorn and nginx
-  exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+  exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
 
 fi
