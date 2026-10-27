@@ -135,7 +135,7 @@ FROM base-django-container AS django-container
 
 WORKDIR /app/
 
-ENV PATH="/usr/bin:/app/bin:\$PATH" \
+ENV PATH="/app/bin:/usr/bin" \
     PYTHONUNBUFFERED=1 \
     TZ=America/Los_Angeles
 
@@ -182,6 +182,7 @@ WORKDIR /app/
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
     python3.12 \
+    python3-minimal \
     dumb-init \
     nginx \
     git \
@@ -195,8 +196,6 @@ RUN apt-get update && \
     libpsl5t64 \
     ca-certificates \
     libatomic1 \
-    nodejs \
-    npm \
     unixodbc-dev && \
     rm -rf /var/lib/apt/lists/*
 
@@ -208,7 +207,7 @@ RUN mkdir -p /run/supervisor /run/gunicorn /run/nginx && \
     chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
 
 # Now set custom PATH after apt-get is no longer needed
-ENV PATH="/app/bin:/usr/bin:\$PATH" \
+ENV PATH="/app/bin:/usr/bin" \
     PYTHONUNBUFFERED=1 \
     TZ=America/Los_Angeles \
     LANGUAGE=en_US.UTF-8 \
@@ -225,7 +224,7 @@ RUN /app/bin/pip install --no-cache-dir \
   coverage \
   nodeenv && \
   nodeenv -p && \
-  npm install npm@latest && \
+  npm install -g npm@latest && \
   npm install -g \
   coveralls \
   datejs \
@@ -251,3 +250,6 @@ HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD /app/bin/python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000')" || exit 1
 
 CMD ["dumb-init", "--rewrite", "15:0", "/scripts/start.sh"]
+
+# Stage 5: default target is the runtime image, never the test image
+FROM django-container AS default
