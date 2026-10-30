@@ -45,6 +45,10 @@ RUN mkdir /rootfs && \
       coreutils_rm-utility \
       coreutils_env \
       coreutils_test \
+      coreutils_touch \
+      coreutils_output-of-entire-files \
+      sed_bins \
+      grep_bins \
       libpsl5t64_libs \
       libatomic1_libs \
       libssl3t64_libcrypto \
@@ -61,7 +65,6 @@ RUN mkdir /rootfs && \
       git_bins \
       git_http-support \
       dumb-init_bins \
-      supervisor_bins \
       hostname_bins \
       sqlite3_bins \
       nginx_bins \
@@ -82,6 +85,7 @@ RUN mkdir -p /app && \
     /app/bin/pip uninstall django -y && \
     /app/bin/pip install wheel \
         gunicorn \
+        supervisor \
         django-prometheus \
         croniter \
         tzdata \
@@ -109,9 +113,11 @@ COPY conf/gunicorn.py /rootfs/etc/gunicorn/conf.py
 COPY conf/nginx.conf /rootfs/etc/nginx/nginx.conf
 COPY conf/locations.conf /rootfs/etc/nginx/includes/locations.conf
 
-RUN mkdir /rootfs/var/run/supervisor && chown -R acait:acait /rootfs/var/run/supervisor && \
-  mkdir /rootfs/var/run/gunicorn && chown -R acait:acait /rootfs/var/run/gunicorn && \
-  mkdir /rootfs/var/run/nginx && chown -R acait:acait /rootfs/var/run/nginx && \
+# /rootfs/var/run is an absolute symlink to /run, so create these under
+# /rootfs/run or they land in this build stage's /run instead
+RUN mkdir /rootfs/run/supervisor && chown -R acait:acait /rootfs/run/supervisor && \
+  mkdir /rootfs/run/gunicorn && chown -R acait:acait /rootfs/run/gunicorn && \
+  mkdir /rootfs/run/nginx && chown -R acait:acait /rootfs/run/nginx && \
   chown -R acait:acait /rootfs/var/lib/nginx /rootfs/var/log/nginx && \
   chgrp acait /rootfs/etc/nginx/nginx.conf && chmod g+w /rootfs/etc/nginx/nginx.conf
 
@@ -129,7 +135,7 @@ FROM base-django-container AS django-container
 
 WORKDIR /app/
 
-ENV PATH="/usr/bin:/app/bin:\$PATH" \
+ENV PATH="/app/bin:/usr/bin" \
     PYTHONUNBUFFERED=1 \
     TZ=America/Los_Angeles
 
@@ -159,27 +165,49 @@ ARG DEBIAN_FRONTEND=noninteractive
 # Copy Django app and runtime from chiseled django-container
 COPY --from=django-container /app /app
 COPY --from=django-container /scripts /scripts
+COPY --from=django-container /static /static
 COPY --from=django-container /etc/supervisor /etc/supervisor
+COPY --from=django-container /etc/gunicorn /etc/gunicorn
+COPY --from=django-container /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive
 COPY --from=django-container /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
-COPY --from=django-container /etc/nginx /etc/nginx
 COPY --from=django-container /home/acait /home/acait
 COPY --from=django-container /etc/passwd /etc/passwd
 COPY --from=django-container /etc/group /etc/group
 
 WORKDIR /app/
 
-# Install system dependencies for testing BEFORE modifying PATH
+# Install system dependencies for testing BEFORE modifying PATH.
+# This stage isn't built FROM django-container, so the first group
+# mirrors the packages chiseled into the runtime image.
 RUN apt-get update && \
     apt-get install --no-install-recommends -y \
+    python3.12 \
+    python3-minimal \
+    dumb-init \
+    nginx \
+    git \
+    sqlite3 \
+    postgresql-client-16 \
+    libpq5 \
+    libxml2 \
+    libxslt1.1 \
+    libxmlsec1t64 \
+    libxmlsec1t64-openssl \
+    libpsl5t64 \
     ca-certificates \
     libatomic1 \
-    nodejs \
-    npm \
     unixodbc-dev && \
     rm -rf /var/lib/apt/lists/*
 
+# After apt so nginx-common's default config doesn't conflict with ours
+COPY --from=django-container /etc/nginx /etc/nginx
+
+RUN mkdir -p /run/supervisor /run/gunicorn /run/nginx && \
+    chown -R acait:acait /run/supervisor /run/gunicorn /run/nginx /var/lib/nginx /var/log/nginx && \
+    chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
+
 # Now set custom PATH after apt-get is no longer needed
-ENV PATH="/app/bin:/usr/bin:\$PATH" \
+ENV PATH="/app/bin:/usr/bin" \
     PYTHONUNBUFFERED=1 \
     TZ=America/Los_Angeles \
     LANGUAGE=en_US.UTF-8 \
@@ -188,7 +216,7 @@ ENV PATH="/app/bin:/usr/bin:\$PATH" \
     LANG=en_US.UTF-8
 
 # Fix ownership of copied files so acait user can access them
-RUN chown -R acait:acait /app /scripts /home/acait
+RUN chown -R acait:acait /app /scripts /static /home/acait
 
 USER acait
 RUN /app/bin/pip install --no-cache-dir \
@@ -196,7 +224,7 @@ RUN /app/bin/pip install --no-cache-dir \
   coverage \
   nodeenv && \
   nodeenv -p && \
-  npm install npm@latest && \
+  npm install -g npm@latest && \
   npm install -g \
   coveralls \
   datejs \
@@ -214,7 +242,14 @@ RUN /app/bin/pip install --no-cache-dir \
 
 ENV NODE_PATH=/app/lib/node_modules
 
+ENV PORT=8000
+ENV DB=sqlite3
+ENV ENV=localdev
+
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD /app/bin/python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000')" || exit 1
 
 CMD ["dumb-init", "--rewrite", "15:0", "/scripts/start.sh"]
+
+# Stage 5: default target is the runtime image, never the test image
+FROM django-container AS default

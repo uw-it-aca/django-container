@@ -1,35 +1,17 @@
 package: libpsl5t64
 
-# libpsl depends on core system libraries
-package-dependencies:
-  - libc6: [libs]
-  - libicu74: [libs]
+essential:
+  - libpsl5t64_copyright
 
 slices:
-  # Core libpsl shared libraries
   libs:
     essential:
-      - libpsl5t64_copyright
       - libc6_libs
-      - libicu74_libs
+      - libidn2-0_libs
+      - libunistring5_libs
     contents:
-      /usr/lib/x86_64-linux-gnu/libpsl.so.5: {}
-      /usr/lib/x86_64-linux-gnu/libpsl.so.5.3.4: {}
-      #/usr/share/libpsl/: {}
+      /usr/lib/*-linux-*/libpsl.so.5*:
 
-  # Development headers (optional, for building against libpsl)
-  dev:
-    essential:
-      - libpsl5t64_copyright
-      - libpsl5t64_libs
-      - libc6_libs
-    paths:
-      - /usr/include/libpsl*.h
-      - /usr/lib/x86_64-linux-gnu/libpsl*.so
-      - /usr/lib/x86_64-linux-gnu/pkgconfig/libpsl*.pc
-
-  # Legally required copyright documentation
   copyright:
-    paths:
-      - /usr/share/doc/libpsl*/copyright
-      - /usr/share/doc/libpsl*/changelog.Debian.gz
+    contents:
+      /usr/share/doc/libpsl5t64/copyright:
