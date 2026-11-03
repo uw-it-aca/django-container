@@ -48,7 +48,9 @@ else
     export GUNICORN_WORKERS=$([ "$ENV" = "prod" ] && echo "3" || echo "2")
   fi
 
-  # Start gunicorn and nginx
-  exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+  # Start gunicorn
+# and nginx
+#  exec /app/bin/supervisord -c /etc/supervisor/supervisord.conf -n
+  exec /app/bin/gunicorn -c /etc/gunicorn/conf.py -w ${GUNICORN_WORKERS} project.wsgi:application
 
 fi
