@@ -40,6 +40,7 @@ RUN mkdir /rootfs && \
       ca-certificates_data \
       bash_bins \
       dash_bins \
+      coreutils_bins \
       coreutils_chmod \
       coreutils_delaying \
       coreutils_rm-utility \
