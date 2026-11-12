@@ -68,7 +68,6 @@ RUN mkdir /rootfs && \
       dumb-init_bins \
       hostname_bins \
       sqlite3_bins \
-      nginx_bins \
       postgresql-client-16_bins
 
 # set locale on /rootfs
@@ -86,7 +85,6 @@ RUN mkdir -p /app && \
     /app/bin/pip uninstall django -y && \
     /app/bin/pip install wheel \
         gunicorn \
-        supervisor \
         django-prometheus \
         croniter \
         tzdata \
@@ -108,19 +106,12 @@ RUN usermod -l acait -d /home/acait -m ubuntu && \
     chown -R acait:acait /rootfs/app /rootfs/static /rootfs/home/acait && \
     chmod -R +x /rootfs/scripts
 
-# Set up gunicorn/nginx
-COPY conf/supervisord.conf /rootfs/etc/supervisor/supervisord.conf
+# Set up gunicorn
 COPY conf/gunicorn.py /rootfs/etc/gunicorn/conf.py
-COPY conf/nginx.conf /rootfs/etc/nginx/nginx.conf
-COPY conf/locations.conf /rootfs/etc/nginx/includes/locations.conf
 
 # /rootfs/var/run is an absolute symlink to /run, so create these under
 # /rootfs/run or they land in this build stage's /run instead
-RUN mkdir /rootfs/run/supervisor && chown -R acait:acait /rootfs/run/supervisor && \
-  mkdir /rootfs/run/gunicorn && chown -R acait:acait /rootfs/run/gunicorn && \
-  mkdir /rootfs/run/nginx && chown -R acait:acait /rootfs/run/nginx && \
-  chown -R acait:acait /rootfs/var/lib/nginx /rootfs/var/log/nginx && \
-  chgrp acait /rootfs/etc/nginx/nginx.conf && chmod g+w /rootfs/etc/nginx/nginx.conf
+RUN mkdir /rootfs/run/gunicorn && chown -R acait:acait /rootfs/run/gunicorn
 
 # Append the uwca to the ca-bundle
 RUN cat /rootfs/app/certs/ca-uwca.crt >> /rootfs/etc/ssl/certs/ca-certificates.crt
@@ -167,7 +158,6 @@ ARG DEBIAN_FRONTEND=noninteractive
 COPY --from=django-container /app /app
 COPY --from=django-container /scripts /scripts
 COPY --from=django-container /static /static
-COPY --from=django-container /etc/supervisor /etc/supervisor
 COPY --from=django-container /etc/gunicorn /etc/gunicorn
 COPY --from=django-container /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive
 COPY --from=django-container /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
@@ -185,7 +175,6 @@ RUN apt-get update && \
     python3.12 \
     python3-minimal \
     dumb-init \
-    nginx \
     git \
     sqlite3 \
     postgresql-client-16 \
@@ -200,12 +189,7 @@ RUN apt-get update && \
     unixodbc-dev && \
     rm -rf /var/lib/apt/lists/*
 
-# After apt so nginx-common's default config doesn't conflict with ours
-COPY --from=django-container /etc/nginx /etc/nginx
-
-RUN mkdir -p /run/supervisor /run/gunicorn /run/nginx && \
-    chown -R acait:acait /run/supervisor /run/gunicorn /run/nginx /var/lib/nginx /var/log/nginx && \
-    chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
+RUN mkdir -p /run/gunicorn && chown -R acait:acait /run/gunicorn
 
 # Now set custom PATH after apt-get is no longer needed
 ENV PATH="/app/bin:/usr/bin" \
