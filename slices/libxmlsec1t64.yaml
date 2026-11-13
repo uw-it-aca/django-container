@@ -1,0 +1,17 @@
+package: libxmlsec1t64
+
+essential:
+  - libxmlsec1t64_copyright
+
+slices:
+  libs:
+    essential:
+      - libc6_libs
+      - libxml2_libs
+      - libxslt1.1_libs
+    contents:
+      /usr/lib/*-linux-*/libxmlsec1.so.1*:
+
+  copyright:
+    contents:
+      /usr/share/doc/libxmlsec1t64/copyright:

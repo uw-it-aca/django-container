@@ -1,0 +1,18 @@
+package: postgresql-client-16
+
+essential:
+  - postgresql-client-16_copyright
+
+slices:
+  # PostgreSQL 16 client binaries including pg_isready
+  bins:
+    essential:
+      - libc6_libs
+      - libpq5_libs
+    contents:
+      /usr/lib/postgresql/16/bin/pg_isready:
+      /usr/bin/pg_isready: {symlink: /usr/lib/postgresql/16/bin/pg_isready}
+
+  copyright:
+    contents:
+      /usr/share/doc/postgresql-client-16/copyright:

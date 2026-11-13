@@ -1,7 +1,8 @@
-FROM ubuntu:24.04 AS django-container
-WORKDIR /app/
-ENV PYTHONUNBUFFERED=1
-ENV TZ=America/Los_Angeles
+ARG UBUNTU_RELEASE=24.04 CHISEL_VERSION=v1.5.0
+
+# Stage 1: Extract minimal Ubuntu/Python runtime with Chisel
+FROM ubuntu:$UBUNTU_RELEASE AS chisel-base
+ARG UBUNTU_RELEASE CHISEL_VERSION
 
 # Install system dependencies
 ARG DEBIAN_FRONTEND=noninteractive
@@ -10,68 +11,135 @@ RUN apt-get update -y && \
   apt-get dist-upgrade -y && \
   apt-get clean && \
   apt-get install --no-install-recommends -y \
-  build-essential \
-  curl \
-  dumb-init \
-  git \
-  hostname \
-  libpq-dev \
-  libxml2-dev \
-  libxmlsec1-dev \
   locales \
-  netcat-openbsd \
-  nginx \
-  openssl \
+  build-essential \
   pkg-config \
   python3.12-dev \
-  python3-venv \
   python3-pip \
-  sqlite3 \
+  python3-venv \
+  libpq-dev \
+  curl \
+  git \
   sudo \
-  supervisor \
   tar && \
-  rm -rf /var/lib/apt/lists
+  rm -rf /var/lib/apt/lists/*
 
-RUN locale-gen en_US.UTF-8
-# locale.getdefaultlocale() searches in this order
-ENV LANGUAGE=en_US.UTF-8
-ENV LC_ALL=en_US.UTF-8
-ENV LC_CTYPE=en_US.UTF-8
-ENV LANG=en_US.UTF-8
+# Add custom chisel slice definitions
+RUN git clone -b ubuntu-${UBUNTU_RELEASE} https://github.com/canonical/chisel-releases ./custom-release
+COPY ./slices ./custom-release/slices/
 
-RUN python3 -m venv /app/
+# Install chisel tool
+RUN curl -S --location https://github.com/canonical/chisel/releases/download/${CHISEL_VERSION}/chisel_${CHISEL_VERSION}_linux_amd64.tar.gz \
+    | tar --extract --gunzip --directory=/usr/local/bin chisel
 
-RUN /app/bin/pip install django && \
-  /app/bin/django-admin startproject project . && \
-  /app/bin/pip uninstall django -y
+# Use chisel cut to extract only essential packages needed for Python/Django runtime
+RUN mkdir /rootfs && \
+    chisel cut --release ./custom-release --root /rootfs \
+      base-files_base \
+      passwd_config \
+      ca-certificates_data \
+      bash_bins \
+      dash_bins \
+      coreutils_bins \
+      coreutils_chmod \
+      coreutils_delaying \
+      coreutils_rm-utility \
+      coreutils_env \
+      coreutils_test \
+      coreutils_touch \
+      coreutils_output-of-entire-files \
+      sed_bins \
+      grep_bins \
+      libpsl5t64_libs \
+      libatomic1_libs \
+      libssl3t64_libcrypto \
+      libssl3t64_libs \
+      openssl_config \
+      openssl_data \
+      python3.12-venv_ensurepip \
+      python3-minimal_bins \
+      libc6_libs \
+      libpq5_libs \
+      libxml2_libs \
+      libxmlsec1t64_libs \
+      libxmlsec1t64-openssl_libs \
+      git_bins \
+      git_http-support \
+      dumb-init_bins \
+      hostname_bins \
+      sqlite3_bins \
+      postgresql-client-16_bins
 
-RUN /app/bin/pip install wheel gunicorn django-prometheus croniter tzdata
+# set locale on /rootfs
+RUN /usr/sbin/locale-gen en_US.UTF-8
+RUN mkdir -p /rootfs/usr/lib/locale && \
+    cp /usr/lib/locale/locale-archive /rootfs/usr/lib/locale/locale-archive
 
-COPY project/ /app/project
-COPY scripts /scripts
-COPY certs/ /app/certs
-RUN mkdir /static
+# install python3 virtual env, django startproject and
+# common python packages (and those req'ing gcc) then
+# copy to /rootfs/app to preserve paths in venv
+RUN mkdir -p /app && \
+    /usr/bin/python3 -m venv /app && \
+    /app/bin/pip install django && \
+    /app/bin/django-admin startproject project /app && \
+    /app/bin/pip uninstall django -y && \
+    /app/bin/pip install wheel \
+        gunicorn \
+        django-prometheus \
+        croniter \
+        tzdata \
+        psycopg[c] && \
+    mv /app /rootfs
 
-# Override default ubuntu user with acait
+COPY project/ /rootfs/app/project
+COPY scripts /rootfs/scripts
+COPY certs/ /rootfs/app/certs
+RUN mkdir /rootfs/static
+
+# Override default ubuntu user with acait and set ownership
 RUN usermod -l acait -d /home/acait -m ubuntu && \
-  groupmod -n acait ubuntu && \
-  chown -R acait:acait /app /static /home/acait && \
-  chmod -R +x /scripts
+    groupmod -n acait ubuntu && \
+    mkdir -p /rootfs/etc && \
+    grep "^acait:" /etc/passwd >> /rootfs/etc/passwd && \
+    grep "^acait:" /etc/group >> /rootfs/etc/group && \
+    mv /home/acait /rootfs/home/acait && \
+    chown -R acait:acait /rootfs/app /rootfs/static /rootfs/home/acait && \
+    chmod -R +x /rootfs/scripts
 
-# Set up gunicorn/nginx
-COPY conf/supervisord.conf /etc/supervisor/supervisord.conf
-COPY conf/gunicorn.py /etc/gunicorn/conf.py
-COPY conf/nginx.conf /etc/nginx/nginx.conf
-COPY conf/locations.conf /etc/nginx/includes/locations.conf
+# Set up gunicorn
+COPY conf/gunicorn.py /rootfs/etc/gunicorn/conf.py
 
-RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
-  mkdir /var/run/gunicorn && chown -R acait:acait /var/run/gunicorn && \
-  mkdir /var/run/nginx && chown -R acait:acait /var/run/nginx && \
-  chown -R acait:acait /var/lib/nginx /var/log/nginx && \
-  chgrp acait /etc/nginx/nginx.conf && chmod g+w /etc/nginx/nginx.conf
+# /rootfs/var/run is an absolute symlink to /run, so create these under
+# /rootfs/run or they land in this build stage's /run instead
+RUN mkdir /rootfs/run/gunicorn && chown -R acait:acait /rootfs/run/gunicorn
 
 # Append the uwca to the ca-bundle
-RUN cat /app/certs/ca-uwca.crt >> /etc/ssl/certs/ca-certificates.crt
+RUN cat /rootfs/app/certs/ca-uwca.crt >> /rootfs/etc/ssl/certs/ca-certificates.crt
+
+# Stage 2: Base Django application image (FROM scratch with chisel base)
+FROM scratch AS base-django-container
+
+# Copy minimal Ubuntu/Python runtime from chisel extraction
+COPY --from=chisel-base /rootfs /
+
+# Stage 3: Django application image (from chiseled base container)
+FROM base-django-container AS django-container
+
+WORKDIR /app/
+
+ENV PATH="/app/bin:/usr/bin" \
+    PYTHONUNBUFFERED=1 \
+    TZ=America/Los_Angeles
+
+# locale.getdefaultlocale() searches in this order
+ENV LANGUAGE=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    LC_CTYPE=en_US.UTF-8 \
+    LANG=en_US.UTF-8
+
+# Health check to verify application responsiveness
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD /app/bin/python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000')" || exit 1
 
 USER acait
 
@@ -81,21 +149,67 @@ ENV ENV=localdev
 
 CMD ["dumb-init", "--rewrite", "15:0", "/scripts/start.sh"]
 
-FROM django-container AS django-test-container
+# Stage 4: Test container for CI/development (includes test tooling)
+FROM ubuntu:24.04 AS django-test-container
 
-# install test tooling
-USER root
+ARG DEBIAN_FRONTEND=noninteractive
+
+# Copy Django app and runtime from chiseled django-container
+COPY --from=django-container /app /app
+COPY --from=django-container /scripts /scripts
+COPY --from=django-container /static /static
+COPY --from=django-container /etc/gunicorn /etc/gunicorn
+COPY --from=django-container /usr/lib/locale/locale-archive /usr/lib/locale/locale-archive
+COPY --from=django-container /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+COPY --from=django-container /home/acait /home/acait
+COPY --from=django-container /etc/passwd /etc/passwd
+COPY --from=django-container /etc/group /etc/group
+
+WORKDIR /app/
+
+# Install system dependencies for testing BEFORE modifying PATH.
+# This stage isn't built FROM django-container, so the first group
+# mirrors the packages chiseled into the runtime image.
 RUN apt-get update && \
-    apt-get install --no-install-recommends -y nodejs npm unixodbc-dev && \
-    rm -rf /var/lib/apt/lists
+    apt-get install --no-install-recommends -y \
+    python3.12 \
+    python3-minimal \
+    dumb-init \
+    git \
+    sqlite3 \
+    postgresql-client-16 \
+    libpq5 \
+    libxml2 \
+    libxslt1.1 \
+    libxmlsec1t64 \
+    libxmlsec1t64-openssl \
+    libpsl5t64 \
+    ca-certificates \
+    libatomic1 \
+    unixodbc-dev && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN mkdir -p /run/gunicorn && chown -R acait:acait /run/gunicorn
+
+# Now set custom PATH after apt-get is no longer needed
+ENV PATH="/app/bin:/usr/bin" \
+    PYTHONUNBUFFERED=1 \
+    TZ=America/Los_Angeles \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    LC_CTYPE=en_US.UTF-8 \
+    LANG=en_US.UTF-8
+
+# Fix ownership of copied files so acait user can access them
+RUN chown -R acait:acait /app /scripts /static /home/acait
 
 USER acait
-RUN . /app/bin/activate && pip install --no-cache-dir \
+RUN /app/bin/pip install --no-cache-dir \
   pycodestyle \
   coverage \
   nodeenv && \
   nodeenv -p && \
-  npm install npm@latest && \
+  npm install -g npm@latest && \
   npm install -g \
   coveralls \
   datejs \
@@ -112,3 +226,15 @@ RUN . /app/bin/activate && pip install --no-cache-dir \
   tslib
 
 ENV NODE_PATH=/app/lib/node_modules
+
+ENV PORT=8000
+ENV DB=sqlite3
+ENV ENV=localdev
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD /app/bin/python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000')" || exit 1
+
+CMD ["dumb-init", "--rewrite", "15:0", "/scripts/start.sh"]
+
+# Stage 5: default target is the runtime image, never the test image
+FROM django-container AS default

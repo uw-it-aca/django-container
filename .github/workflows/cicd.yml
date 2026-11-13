@@ -117,6 +117,7 @@ jobs:
       - name: Build Django Container Test Image
         uses: docker/build-push-action@v6
         with:
+          target: django-test-container
           tags: ${{ steps.tags.outputs.dtc_tag }}
           push: false
           load: true
