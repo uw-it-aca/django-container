@@ -47,7 +47,7 @@ services:
       - "${PROXY_PORT:-8080}:8080"
     volumes:
       - ./compose/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ${APP_LOCATIONS_CONF:-./conf/locations.conf}:/etc/nginx/includes/locations.conf:ro
+      - ${APP_LOCATIONS_CONF:-./compose/locations.conf}:/etc/nginx/includes/locations.conf:ro
       - socket:/var/run/gunicorn
       # like the chart: the app image's /static mounted read-only (image volume)
       # apps' locations.conf aliases /static (image path). Add more image
