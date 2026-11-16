@@ -25,7 +25,7 @@ spew = False
 
 daemon = False
 raw_env = []
-pidfile = '/var/run/gunicorn/gunicorn.pid'
+pidfile = None
 umask = 0
 user = 'acait'
 group = 'acait'

@@ -13,11 +13,26 @@ then
     done
     SIGNAL=TERM
 else
-    PROCESS_ID=$(<"/var/run/supervisor/supervisord.pid")
+    # The gunicorn master is the lowest-pid gunicorn process (workers are its
+    # children). No pidfile: a stale one in the shared socket volume can stop
+    # gunicorn from starting after a container restart.
+    PROCESS_ID=""
+    for PROC in /proc/[0-9]*
+    do
+        mapfile -d '' ARGS < "$PROC/cmdline" 2>/dev/null || continue
+        if [[ "${ARGS[*]}" == "/app/bin/python"*" /app/bin/gunicorn "* ]]
+        then
+            PID=${PROC#/proc/}
+            if [ -z "$PROCESS_ID" ] || [ "$PID" -lt "$PROCESS_ID" ]
+            then
+                PROCESS_ID=$PID
+            fi
+        fi
+    done
     SIGNAL=TERM
 fi
 
-kill -$SIGNAL $PROCESS_ID
+[ -n "$PROCESS_ID" ] && kill -$SIGNAL $PROCESS_ID
 
 # Wait for the process to exit (max 20s) rather than sleeping blindly;
 # the container normally exits mid-hook, which kubelet reports as FailedPreStopHook
