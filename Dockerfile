@@ -137,10 +137,6 @@ ENV LANGUAGE=en_US.UTF-8 \
     LC_CTYPE=en_US.UTF-8 \
     LANG=en_US.UTF-8
 
-# Health check to verify application responsiveness
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD /app/bin/python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000')" || exit 1
-
 USER acait
 
 ENV PORT=8000
