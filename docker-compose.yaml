@@ -59,7 +59,7 @@ services:
         image:
           subpath: static
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost:8080/healthz"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/readyz"]
       interval: 5s
       timeout: 3s
       retries: 6
