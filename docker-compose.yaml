@@ -36,7 +36,7 @@ services:
     stop_grace_period: 30s
 
   proxy-server:
-    image: nginx/nginx-unprivileged:stable
+    image: nginx/nginx-unprivileged:1.30.6
     user: "1000:1000"
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
