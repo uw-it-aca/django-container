@@ -50,13 +50,8 @@ services:
       - ${APP_LOCATIONS_CONF:-./conf/locations.conf}:/etc/nginx/includes/locations.conf:ro
       - socket:/var/run/gunicorn
       # like the chart: the app image's /static mounted read-only (image volume)
-      - type: image
-        source: ${APP_IMAGE}
-        target: /common/static
-        read_only: true
-        image:
-          subpath: static
-      # apps' locations.conf aliases /static (image path)
+      # apps' locations.conf aliases /static (image path). Add more image
+      # subpaths the same way (chart: proxyServer.appImagePaths)
       - type: image
         source: ${APP_IMAGE}
         target: /static
