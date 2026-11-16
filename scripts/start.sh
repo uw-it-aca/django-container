@@ -32,9 +32,6 @@ then
 
 else
 
-  # Prepare for readinessProbe
-  : > /tmp/ready
-
   # Set the number of gunicorn workers if it hasn't been set earlier
   if [ -z "$GUNICORN_WORKERS" ]
   then
