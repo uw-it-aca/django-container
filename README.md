@@ -19,6 +19,13 @@ Things that used to rely on the image answering on port 8000 (CI smoke tests,
 `docker run -p 8000:8000`, ad-hoc compose files) need either `ENV=localdev`
 (Django `runserver`, TCP on `$PORT`) or the compose setup below.
 
+CI that needs to talk to the app (smoke tests, health checks) should do so over
+the unix socket, not HTTP on a port. For example, inside the container, connect
+to `/var/run/gunicorn/gunicorn.sock` with a plain `GET`. The
+`uw-it-aca/actions/django-container-smoke-test` action does this when given
+`unix-socket: /var/run/gunicorn/gunicorn.sock` and a path as `health-check-url`.
+The image has no curl.
+
 ### Migrating an app
 
 - **Static files and extra locations:** the app's `docker/locations.conf` is no
