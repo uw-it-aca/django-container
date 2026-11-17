@@ -20,7 +20,10 @@ fi
 if [ -f /scripts/app_start.sh ]
 then
 
+  # a failing app_start.sh must stop the container, not start a half-initialised app
+  set -e
   . /scripts/app_start.sh
+  set +e
 
 fi
 

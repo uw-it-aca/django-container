@@ -32,6 +32,14 @@ else
     SIGNAL=TERM
 fi
 
+# Behind the nginx sidecar, stopping gunicorn immediately makes requests that
+# are still being routed to this pod fail with 502. Wait for endpoint removal to
+# propagate first. Counts against terminationGracePeriodSeconds.
+if [ "$ENV" != "localdev" ] && [ -n "$PROCESS_ID" ]
+then
+    sleep "${PRESTOP_DELAY:-10}"
+fi
+
 [ -n "$PROCESS_ID" ] && kill -$SIGNAL $PROCESS_ID
 
 # Wait for the process to exit (max 20s) rather than sleeping blindly;
