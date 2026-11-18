@@ -16,5 +16,5 @@ then
 
 fi
 
-# planted in the filesystem by successful deploy.sh
-[ -f /tmp/ready ]
+# gunicorn creates its socket once it is listening
+[ -S /var/run/gunicorn/gunicorn.sock ]

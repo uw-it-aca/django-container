@@ -1,7 +1,4 @@
 #!/bin/bash
-# Remove any existing httpd data
-rm -rf /run/httpd/* /tmp/httpd*
-
 source "/app/bin/activate"
 
 
@@ -23,7 +20,10 @@ fi
 if [ -f /scripts/app_start.sh ]
 then
 
+  # a failing app_start.sh must stop the container, not start a half-initialised app
+  set -e
   . /scripts/app_start.sh
+  set +e
 
 fi
 
@@ -34,13 +34,6 @@ then
   python manage.py runserver 0:$PORT
 
 else
-
-  # Prepare for readinessProbe
-  : > /tmp/ready
-
-  # Set the port for nginx
-  NGINX_CONF=$(</etc/nginx/nginx.conf)
-  printf '%s\n' "${NGINX_CONF//'${PORT}'/$PORT}" > /etc/nginx/nginx.conf
 
   # Set the number of gunicorn workers if it hasn't been set earlier
   if [ -z "$GUNICORN_WORKERS" ]
