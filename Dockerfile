@@ -73,6 +73,13 @@ RUN mkdir /var/run/supervisor && chown -R acait:acait /var/run/supervisor && \
 # Append the uwca to the ca-bundle
 RUN cat /app/certs/ca-uwca.crt >> /etc/ssl/certs/ca-certificates.crt
 
+# Append the SSL.com intermediate (SSL.com TLS Issuing RSA CA R1).
+# iasystem.org's server does not send its intermediate certificate during
+# the TLS handshake, so clients that don't do AIA chasing (e.g. requests/
+# urllib3 used by uw-restclients-core) fail to build a full chain to the
+# trusted SSL.com root unless the intermediate is trusted directly.
+RUN cat /app/certs/ssl-com-tls-i-rsa-r1.crt >> /etc/ssl/certs/ca-certificates.crt
+
 USER acait
 
 ENV PORT=8000
