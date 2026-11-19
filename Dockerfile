@@ -80,10 +80,11 @@ RUN mkdir -p /rootfs/usr/lib/locale && \
 # copy to /rootfs/app to preserve paths in venv
 RUN mkdir -p /app && \
     /usr/bin/python3 -m venv /app && \
+    /app/bin/pip install --upgrade pip && \
     /app/bin/pip install django && \
     /app/bin/django-admin startproject project /app && \
     /app/bin/pip uninstall django -y && \
-    /app/bin/pip install wheel \
+    /app/bin/pip install wheel --uploaded-prior-to P3D\
         gunicorn \
         django-prometheus \
         croniter \
@@ -200,7 +201,7 @@ ENV PATH="/app/bin:/usr/bin" \
 RUN chown -R acait:acait /app /scripts /static /home/acait
 
 USER acait
-RUN /app/bin/pip install --no-cache-dir \
+RUN /app/bin/pip install --uploaded-prior-to P3D --no-cache-dir \
   pycodestyle \
   coverage \
   nodeenv && \
