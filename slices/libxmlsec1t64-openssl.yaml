@@ -1,0 +1,18 @@
+package: libxmlsec1t64-openssl
+
+essential:
+  - libxmlsec1t64-openssl_copyright
+
+slices:
+  libs:
+    essential:
+      - libc6_libs
+      - libssl3t64_libcrypto
+      - libxml2_libs
+      - libxmlsec1t64_libs
+    contents:
+      /usr/lib/*-linux-*/libxmlsec1-openssl.so.1*:
+
+  copyright:
+    contents:
+      /usr/share/doc/libxmlsec1t64-openssl/copyright:

@@ -1,0 +1,68 @@
+# Local emulation of the django-production-chart nginx sidecar
+# (proxyServer.enabled: true) for django-container based apps.
+#
+#   APP_IMAGE=rttl-rest-app:latest \
+#   APP_ENV_FILE=./app.env \
+#   APP_LOCATIONS_CONF=/work/rttl-rest/docker/locations.conf \
+#   docker compose up
+#
+# then browse http://localhost:8080 (PROXY_PORT to change).
+#
+# Mirrors the pod: gunicorn in the app container, nginx in a second container,
+# sharing /var/run/gunicorn (unix socket); nginx gets the app image's /static
+# as a read-only image volume (no copy). /media is not served.
+# The app env must NOT set ENV=localdev (runserver listens on TCP, no gunicorn).
+
+services:
+  app:
+    image: ${APP_IMAGE:?set APP_IMAGE to the app image}
+    env_file:
+      - ${APP_ENV_FILE:-/dev/null}
+    environment:
+      ENV: ${APP_ENV:-prod}
+      DB: ${APP_DB:-sqlite3}
+      PORT: "8000"
+    volumes:
+      # first mount of a named volume copies the image's /run/gunicorn
+      # (owned by acait), as emptyDir would not; see README note
+      - socket:/var/run/gunicorn
+    # no TCP listener in the app container; readiness == socket exists
+    healthcheck:
+      test: ["CMD", "/app/bin/python", "-c", "import os,stat,sys; sys.exit(0 if stat.S_ISSOCK(os.stat('/var/run/gunicorn/gunicorn.sock').st_mode) else 1)"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 5s
+    stop_grace_period: 30s
+
+  proxy-server:
+    image: nginx/nginx-unprivileged:1.30.6
+    user: "1000:1000"
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    depends_on:
+      app:
+        condition: service_started
+    ports:
+      - "${PROXY_PORT:-8080}:8080"
+    volumes:
+      - ./compose/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${APP_LOCATIONS_CONF:-./compose/locations.conf}:/etc/nginx/includes/locations.conf:ro
+      - socket:/var/run/gunicorn
+      # like the chart: the app image's /static mounted read-only (image volume)
+      # apps' locations.conf aliases /static (image path). Add more image
+      # subpaths the same way (chart: proxyServer.appImagePaths)
+      - type: image
+        source: ${APP_IMAGE}
+        target: /static
+        read_only: true
+        image:
+          subpath: static
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/readyz"]
+      interval: 5s
+      timeout: 3s
+      retries: 6
+
+volumes:
+  socket:

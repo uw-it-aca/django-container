@@ -5,10 +5,10 @@ on:
   push:
     branches: '**'
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, main-3.x, master, develop]
     types: [opened, reopened, synchronize]
   release:
-    branches: [main, master]
+    branches: [main, main-3.x, master]
     types: [published]
 
 jobs:
@@ -117,6 +117,7 @@ jobs:
       - name: Build Django Container Test Image
         uses: docker/build-push-action@v6
         with:
+          target: django-test-container
           tags: ${{ steps.tags.outputs.dtc_tag }}
           push: false
           load: true
