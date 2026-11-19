@@ -41,11 +41,12 @@ ENV LANG=en_US.UTF-8
 
 RUN python3 -m venv /app/
 
-RUN /app/bin/pip install django && \
+RUN /app/bin/pip install --upgrade pip && \
+  /app/bin/pip install django && \
   /app/bin/django-admin startproject project . && \
   /app/bin/pip uninstall django -y
 
-RUN /app/bin/pip install wheel gunicorn django-prometheus croniter tzdata
+RUN /app/bin/pip install wheel --uploaded-prior-to P3D gunicorn django-prometheus croniter tzdata
 
 COPY project/ /app/project
 COPY scripts /scripts
@@ -97,7 +98,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists
 
 USER acait
-RUN . /app/bin/activate && pip install --no-cache-dir \
+RUN . /app/bin/activate && pip install --uploaded-prior-to P3D --no-cache-dir \
   pycodestyle \
   coverage \
   nodeenv && \
