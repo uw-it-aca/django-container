@@ -5,10 +5,10 @@ on:
   push:
     branches: '**'
   pull_request:
-    branches: [main, master, develop]
+    branches: [main, main-3.x, master, develop]
     types: [opened, reopened, synchronize]
   release:
-    branches: [main, master]
+    branches: [main, main-3.x, master]
     types: [published]
 
 jobs:
