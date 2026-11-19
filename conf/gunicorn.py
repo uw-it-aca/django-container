@@ -7,12 +7,15 @@ backlog = 2048
 
 # Worker processes
 
-workers = 3  # This is set on the command line by supervisord
+workers = 3  # overridden by -w in start.sh (GUNICORN_WORKERS)
 threads = 4
 worker_class = 'gthread'
 max_requests = 1000
 max_requests_jitter = 30
 worker_tmp_dir = '/dev/shm'
+
+# the control socket writes under $HOME, which is read-only in the pod
+control_socket_disable = True
 timeout = 30
 keepalive = 3
 

@@ -1,0 +1,18 @@
+package: dumb-init
+extra:
+  summary: Simple process supervisor and init system replacement
+  description: |
+    dumb-init - a lightweight init system for containers.
+    Provides PID 1 process management with signal forwarding to prevent
+    zombie processes and ensure proper shutdown of containerized applications.
+slices:
+  bins:
+    summary: dumb-init binary executable
+    description: |
+      dumb-init command-line tool:
+      - usr/bin/dumb-init: Minimal init system for Docker/container PID 1
+      Handles signal propagation and child process cleanup properly.
+    essential:
+      - libc6_libs
+    contents:
+      /usr/bin/dumb-init: {}
